@@ -1,33 +1,46 @@
 <script setup lang="ts">
-  import { reactive, Ref, ref } from 'vue';
+  import { reactive, Ref, ref, onMounted } from 'vue';
   interface IMenuList  {
     txt: string
   }
-  let indexLeftMode: Ref<number> = ref(1)
+  const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%8E%8B%E7%A5%96%E8%B4%A4%20-%20%E4%BD%A0%E6%98%AF%E9%9B%BE%E6%88%91%E6%98%AF%E9%85%92%E9%A6%86.mp3"
+  let indexLeftMode = ref(1), menuMode = ref(false)
+  let tim1 = ref(0), tim2 =ref(0)
+  let idxAudio = ref<any>(null), lp = ref<any>(null)
   let menuList: Array<IMenuList> = reactive([
     {txt: "诗"},
     {txt: "乐"},
     {txt: "记"}
   ])
   let mainList: any = reactive([
-    {title:"海风", content: "xxxxx"},
+    {title:"海风", content: `你回首\n于是 整个天空\n都笑开了颜\n那会是群可爱的精灵\n乘着蓝蓝的海风\n把我推向六月明媚的你`},
     {title:"你是雾我是酒馆", content: "xxxxx"},
     {title:"typescript", content: "xxxxx"}
   ])
   function changeLeftMode (mode: number) {
-    let tim = 0, inv = 800
-    /* 此处有问题 */
-    return function () {
-      if (mode) {
-        console.log("leave ---", tim)
-        clearInterval(tim)
-        indexLeftMode.value=mode
-      } else {
-        tim = setTimeout(()=>{indexLeftMode.value=mode}, inv)
-        console.log("enter ---",tim)
-      }
+    let inv = 705
+    if (mode) {
+      // leave
+      // console.log("leave ---", tim1.value)
+      clearInterval(tim1.value)
+      tim2.value = setTimeout(()=>{indexLeftMode.value=mode}, inv)
+      menuMode.value = true
+    } else {
+      // enter
+      clearInterval(tim2.value)
+      tim1.value = setTimeout(()=>{indexLeftMode.value=mode}, inv)
+      menuMode.value = false
+      // console.log("enter ---",tim1.value)
     }
   }
+  onMounted(()=>{
+    console.log(idxAudio?.value)
+    document.addEventListener("click", musicAutoPlay)
+    function musicAutoPlay () {
+      idxAudio?.value[0].play()
+      document.removeEventListener("click", musicAutoPlay)
+    }
+  })
 </script>
 
 <template>
@@ -38,15 +51,19 @@
         <div class="logo-wave absolute-center"></div>
       </div>
       <ul class="menu" v-else>
-        <li v-for="(v,i) in menuList" :key="i">{{v.txt}}</li>
+        <li class="menu-li" :class="{'menu-fade': menuMode}" v-for="(v,i) in menuList" :key="i">{{v.txt}}</li>
+        <li class="absolute-center" :class="{'menu-wave': menuMode}"></li>
       </ul>
     </div>
     <div class="index-right flex-center">
       <ul class="main flex-col-ycenter">
-        <li v-for="(v,i) in mainList" :key="i">
+        <li  v-for="(v,i) in mainList" :key="i">
           <div class="main-cate">{{menuList[i].txt}}</div>
           <div class="main-title">{{v.title}}</div>
-          <div class="main-content">{{v.content}}</div>
+          <div v-if="i!==1" class="main-content">{{v.content}}</div>
+          <div v-else>
+            <audio ref="idxAudio" controls autoplay loop :src="indexMusic">xxxx</audio>
+          </div>
         </li>
       </ul>
     </div>
@@ -64,8 +81,8 @@
       height: 100%;
       // background-color: red;
       &:hover {
-        .logo-pic {animation: fadeOut linear 0.8s forwards;}
-        .logo-wave {animation: wave linear 0.8s forwards;}
+        .logo-pic {animation: fadeOut linear 0.7s forwards;}
+        .logo-wave {animation: wave linear 0.7s forwards;}
       } 
       .logo {
         width: 11vw;
@@ -94,13 +111,32 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        li {
+        position: relative;
+        .menu-li {
           width: 10rem;
           text-align: center;
           // background-color: green;
           font: 2rem/3rem $fontF;
           cursor: pointer;
-          opacity: 0.8;
+          opacity: 0.7;
+          z-index: 2;
+          &:hover {
+            opacity: 1;
+            font-weight: bold;
+          }
+          &.menu-fade {
+            animation: fadeOut linear 0.7s forwards;
+          }
+        }
+        li:last-of-type {
+          width: 19rem;
+          height: 19rem;
+          border: 1px solid black;
+          border-radius: 50%;
+          opacity: 0;
+          &.menu-wave {
+            animation: wave linear 0.7s forwards;
+          }
         }
       }
     }
@@ -110,12 +146,20 @@
       // background-color: green;
       flex-direction: column;
       .main {
-        // background-color: yellow;
         li {
           height: 19rem;
           .main-cate {
-            font: bold 1.5rem/5rem $fontF;
+            font: bold 1.8rem/5rem $fontF;
             opacity: 0.2;
+          }
+          .main-title {
+            font: 1.3rem/3rem $fontF;
+          }
+          .main-content {
+            white-space:pre-line;
+            line-height: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
           }
         }
       }
