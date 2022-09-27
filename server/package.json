@@ -4,9 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "typescript": "^4.8.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
 }
