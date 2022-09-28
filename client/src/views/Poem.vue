@@ -1,14 +1,12 @@
 <!-- poem -->
 <template>
-  <div class="poem">
+  <div class="poem" v-if="menuList[actAuthorIdx]?.list">
     <div class="head">
       <div class="head-bar">
         <div class="logo" @click="logoClick"></div>
         <ul>
-          <li>哨子</li>
-          <li>子秋</li>
-          <li>他界</li>
-          <li>| 关于</li>
+          <li v-for="(v, i) in menuList" :key="i" :class="{active: actAuthorIdx===i}">{{v.author}}</li>
+          <li>@关于</li>
         </ul>
       </div>
     </div>
@@ -16,10 +14,10 @@
       <!-- 目录 -->
       <div class="cate">
         <ul>
-          <li class="cate-li" v-for="(v, i) in cateInfo" :key="i">
+          <li class="cate-li" v-for="(v, i) in menuList[actAuthorIdx].list" :key="i">
             <span @click="cateLiClick(i)">{{v.cate}}</span>
             <ul v-if="actCateIdx === i">
-              <li class="cate-item" v-for="(cv, ci) in v.item" :key="ci">{{cv}}</li>
+              <li class="cate-item" v-for="(cv, ci) in v.titles" :key="ci">{{cv}}</li>
             </ul>
           </li>
         </ul>
@@ -28,7 +26,7 @@
       <div class="content flex-col-ycenter">
         <div>
           <div class="poem-img">
-            <div></div>
+            <div :style="{backgroundImage: `url(${poemInfo.imgUrl})`}"></div>
             <span>{{poemInfo.title}}</span>
           </div>
           <div class="poem-body">
@@ -43,7 +41,7 @@
 
 <script setup lang="ts">
   import router from "@/router"
-  import {reactive, ref, onMounted} from "vue"
+  import {reactive, ref, onBeforeMount} from "vue"
 
   interface IpoemInfo {
     title: string,
@@ -54,25 +52,32 @@
   }
   interface IcateInfo {
     cate: string,
-    item: string[] | []
+    titles: string[] | []
   }
+  interface IMenuInfo {
+    author: string,
+    list: Array<IcateInfo>
+  }
+
+  let menuList: Array<IMenuInfo> = reactive([])
+  // let menuList:any[] = reactive([{author: "whistle", list: [{cate: "2015", titles:["xxx"]}]}])
 
   const poemInfo: IpoemInfo = reactive({
     title: "归",
     author: "哨子",
-    imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/poem/whistle/%E5%BD%92/backhome.jpg",
+    imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/poem/whistle/%E5%BD%92.jpg",
     txt: `二月落雪消逝的南方\n你坐在车厢遥望着远方\n晴朗透过车窗印在你眼里\n静静地从眼角流淌\n飘向那条小巷 那棵树旁\n等待 变成了光`,
     date: "2016-02-04"
   })
-  const cateInfo: Array<IcateInfo> = reactive([
-    {cate: "2016", item: ["归"]},
-    {cate: "2017", item: ["归2"]},
-    {cate: "2018", item: ["归3"]},
-    {cate: "2019", item: ["归"]},
-    {cate: "2020", item: ["归2"]},
-    {cate: "2021", item: ["归3"]},
-  ])
-  let actCateIdx = ref(-1), actItemIdx = ref(0)
+  // const cateInfo: Array<IcateInfo> = reactive([
+  //   {cate: "2016", item: ["归"]},
+  //   {cate: "2017", item: ["归2"]},
+  //   {cate: "2018", item: ["归3"]},
+  //   {cate: "2019", item: ["归"]},
+  //   {cate: "2020", item: ["归2"]},
+  //   {cate: "2021", item: ["归3"]},
+  // ])
+  let actAuthorIdx=ref(0), actCateIdx = ref(-1), actItemIdx = ref(0)
 
   function logoClick () {
     router.push("/")
@@ -83,8 +88,18 @@
     else actCateIdx.value = i
   }
 
-  onMounted(() => {
-
+  onBeforeMount(() => {
+    fetch("/api/poem/getMenu")
+    .then(res => res.json()
+    .then(data => {
+      console.log(menuList)
+      if (!data.err) {
+        menuList.push(...data.menuList)
+        // menuList = [{author: "whistle", list: [{cate: "2015", titles:["xxx"]}]}]
+      }
+      console.log(menuList)
+      console.log(menuList[actAuthorIdx.value].list)
+    }))
   })
 </script>
 
@@ -128,9 +143,13 @@
             line-height: $headH;
             opacity: 0.85;
             cursor: pointer;
-            &:hover {
+            &.active {
               opacity: 1;
               font-weight: bold;
+            }
+            &:hover {
+              opacity: 1;
+              // font-weight: bold;
             }
           }
         }
@@ -190,7 +209,7 @@
             >div {
               width: 100%;
               height: 100%;
-              background: url("pic/backhome.jpg") center/cover no-repeat;
+              background:  center/cover no-repeat;
               -webkit-mask : url("pic/poemask.png") center/contain no-repeat;
               mask: url("pic/poemask.png") center/contain no-repeat;
               position: absolute;

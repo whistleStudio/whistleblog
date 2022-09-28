@@ -17,3 +17,18 @@
 ### [09262126]
 
 1 poem页导航
+
+### [09281735]
+
+-  server
+
+1 目录结构规划
+
+2 Poem路由 - getMenu
+
+3 db whistleblog建立
+
+- client
+
+1 poem页getMenu相关逻辑
+

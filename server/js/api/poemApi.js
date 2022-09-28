@@ -1,4 +1,12 @@
 "use strict";
-var express = require('express');
-var router = express.Router();
-module.exports = router;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const rt = express_1.default.Router();
+rt.get("/", (req, res) => {
+    console.log("poem");
+    res.json({ err: 0 });
+});
+exports.default = rt;
