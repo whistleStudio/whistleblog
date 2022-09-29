@@ -1,4 +1,3 @@
-let a = {a:1 , b:2}
-for (let v of a) {
-  console.log(v)
+for (let i in Array(5).fill(0)) {
+  console.log("xx")
 }

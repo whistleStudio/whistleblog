@@ -5,7 +5,7 @@
       <div class="head-bar">
         <div class="logo" @click="logoClick"></div>
         <ul>
-          <li v-for="(v, i) in menuList" :key="i" :class="{active: actAuthorIdx===i}">{{v.author}}</li>
+          <li @click="headAuthorClick(i)" v-for="(v, i) in menuList" :key="i" :class="{active: actAuthorIdx===i}">{{v.author}}</li>
           <li>@关于</li>
         </ul>
       </div>
@@ -14,10 +14,10 @@
       <!-- 目录 -->
       <div class="cate">
         <ul>
-          <li class="cate-li" v-for="(v, i) in menuList[actAuthorIdx].list" :key="i">
-            <span @click="cateLiClick(i)">{{v.cate}}</span>
-            <ul v-if="actCateIdx === i">
-              <li class="cate-item" v-for="(cv, ci) in v.titles" :key="ci">{{cv}}</li>
+          <li class="cate-li"  v-for="(v, i) in menuList[actAuthorIdx].list" :key="i">
+            <span @click="cateLiClick(i)" :class="{active: actCateIdx === i}">{{v.cate}}</span>
+            <ul v-if="actCateIdx === i && !isMenuCollapse">
+              <li @click="cateItemClick(ci)" class="cate-item" :class="{active: 100*i+ci === actItemStyIdx}" v-for="(cv, ci) in v.titles" :key="ci">{{cv}}</li>
             </ul>
           </li>
         </ul>
@@ -32,7 +32,7 @@
           <div class="poem-body">
             {{poemInfo.txt}}
           </div>
-          <div class="poem-bot"><span class="poem-author">{{poemInfo.author}}</span>&nbsp;&nbsp;&nbsp;<span class="poem-date">{{poemInfo.date}}</span></div>
+          <div class="poem-bot"><span v-if="poemInfo.author!=='他界'" class="poem-author">{{poemInfo.author}}&nbsp;&nbsp;&nbsp;</span><span class="poem-date">{{poemInfo.date}}</span></div>
         </div>
       </div>
     </div>
@@ -41,14 +41,16 @@
 
 <script setup lang="ts">
   import router from "@/router"
-  import {reactive, ref, onBeforeMount} from "vue"
+  import { computed } from "@vue/reactivity";
+  import {reactive, ref, onBeforeMount, Ref} from "vue"
 
   interface IpoemInfo {
-    title: string,
-    author: string,
+    title?: string,
+    author?: string,
     imgUrl?: string,
-    txt: string,
-    date: string
+    txt?: string,
+    date?: string,
+    color?: number
   }
   interface IcateInfo {
     cate: string,
@@ -60,45 +62,57 @@
   }
 
   let menuList: Array<IMenuInfo> = reactive([])
-  // let menuList:any[] = reactive([{author: "whistle", list: [{cate: "2015", titles:["xxx"]}]}])
-
-  const poemInfo: IpoemInfo = reactive({
-    title: "归",
-    author: "哨子",
-    imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/poem/whistle/%E5%BD%92.jpg",
-    txt: `二月落雪消逝的南方\n你坐在车厢遥望着远方\n晴朗透过车窗印在你眼里\n静静地从眼角流淌\n飘向那条小巷 那棵树旁\n等待 变成了光`,
-    date: "2016-02-04"
-  })
-  // const cateInfo: Array<IcateInfo> = reactive([
-  //   {cate: "2016", item: ["归"]},
-  //   {cate: "2017", item: ["归2"]},
-  //   {cate: "2018", item: ["归3"]},
-  //   {cate: "2019", item: ["归"]},
-  //   {cate: "2020", item: ["归2"]},
-  //   {cate: "2021", item: ["归3"]},
-  // ])
-  let actAuthorIdx=ref(0), actCateIdx = ref(-1), actItemIdx = ref(0)
-
+  let poemInfo: Ref<IpoemInfo> = ref({})
+  let actAuthorIdx =ref(0), actCateIdx = ref(0), actItemIdx = ref(0), isMenuCollapse = ref(true), actItemStyIdx = ref(0)
+  const actAuthor = computed<string>(() => menuList[actAuthorIdx.value].author)
+  const actTitle = computed<string>(() => menuList[actAuthorIdx.value].list[actCateIdx.value].titles[actItemIdx.value])
+  
+  /* 会主页 */  
   function logoClick () {
     router.push("/")
   }
+  /* 点击顶部作者 */
+  function headAuthorClick (i: number) {
+    actAuthorIdx.value = i
+    actCateIdx.value = 0; actItemIdx.value = 0; actItemStyIdx.value = 0
+    getPoem(actAuthor.value, actTitle.value)
+  }
+  /* 点击侧边分类 */
   function cateLiClick (i: number) {
     if (actCateIdx.value === i)
-      actCateIdx.value = -1
-    else actCateIdx.value = i
+      isMenuCollapse.value = !isMenuCollapse.value
+    else {actCateIdx.value = i; isMenuCollapse.value = false}
   }
-
+  /* 点击侧边诗标题 */
+  function cateItemClick (ci: number) {
+    actItemStyIdx.value = 100*actCateIdx.value + actItemIdx.value //控制标题激活样式
+    actItemIdx.value = ci
+    getPoem(actAuthor.value, actTitle.value)
+  }
+  /* 请求单例具体内容 */
+  function getPoem (author: string, title: string):void {
+    fetch(`/api/poem/getPoem?author=${author}&title=${title}`)
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+        poemInfo.value = data.poemInfo
+        console.log(typeof poemInfo.value)
+      } else alert(data.msg)
+    }))
+  }
+  /* ----------------------- */
   onBeforeMount(() => {
+    /* 请求目录 */
     fetch("/api/poem/getMenu")
     .then(res => res.json()
     .then(data => {
-      console.log(menuList)
       if (!data.err) {
         menuList.push(...data.menuList)
         // menuList = [{author: "whistle", list: [{cate: "2015", titles:["xxx"]}]}]
-      }
-      console.log(menuList)
-      console.log(menuList[actAuthorIdx.value].list)
+        // console.log(actAuthor, acdgtTitle)
+        getPoem (actAuthor.value, actTitle.value)
+      } else alert(data.msg)
+      console.log("menulist ---", menuList)
     }))
   })
 </script>
@@ -106,13 +120,14 @@
 <style scoped lang="scss">
   $headH: 80px;
   .poem {
-    width: 100vw;
+    width: calc(100vw - 20px);
     height: 100vh;
     .head {
       width: 100%;
       height: $headH;
       position: fixed;
       background-color: white;
+      z-index: 2;
       .head-bar {
         margin: 0 auto;
         width: 55%;
@@ -174,9 +189,12 @@
             >span {
               font: 22px/70px $fontF;
               cursor: pointer;
-              opacity: 0.5;
+              opacity: 0.3;
               &:hover {
-                opacity: 0.9;
+                opacity: 0.6;
+              }
+              &.active {
+                opacity: 0.9;  
               }
             }
             >ul {
@@ -184,6 +202,13 @@
                 text-align: start;
                 text-indent: 14px;
                 font: 15px/30px $fontF;
+                opacity: 0.7;
+                cursor: pointer;
+                &.active {
+                  opacity: 0.9;
+                  text-decoration: underline;
+                  text-underline-offset: 5px;
+                }
               }
             }
           }
@@ -194,7 +219,6 @@
         // background-color: red;
         display: flex;
         justify-content: center;
-
         // opacity: 0.5;
         >div {
           width: 650px;
@@ -221,7 +245,7 @@
               font: bold 30px $fontF;
               left: 50%;
               transform: translateX(-50%);
-              opacity: 0.9;
+              opacity: 0.8;
             }
           }
           .poem-body {
@@ -236,6 +260,10 @@
             font-size: 15px;
             margin-top: 20px;
             opacity: 0.9;
+            &::after {
+              content: "";
+              height: 100px;
+            }
           }
         }
       }

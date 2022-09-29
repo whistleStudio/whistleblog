@@ -17,7 +17,7 @@
           <div class="main-title">{{v.title}}</div>
           <div v-if="i!==1" class="main-content">{{v.content}}</div>
           <div v-else>
-            <audio ref="idxAudio" controls autoplay loop :src="indexMusic">xxxx</audio>
+            <audio ref="idxAudio" controls autoplay loop :src="indexMusic" volume="0.6">xxxx</audio>
           </div>
         </li>
       </ul>
@@ -33,7 +33,7 @@
     link: string
   }
   const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%8E%8B%E7%A5%96%E8%B4%A4%20-%20%E4%BD%A0%E6%98%AF%E9%9B%BE%E6%88%91%E6%98%AF%E9%85%92%E9%A6%86.mp3"
-  let indexLeftMode = ref(1), menuMode = ref(false)
+  let indexLeftMode = ref<number>(1), menuMode = ref(false)
   let tim1 = ref(0), tim2 =ref(0)
   let idxAudio = ref<any>(null), lp = ref<any>(null)
   let menuList: Array<IMenuList> = reactive([
@@ -71,7 +71,7 @@
   onMounted(()=>{
     document.addEventListener("click", musicAutoPlay)
     function musicAutoPlay () {
-      idxAudio?.value[0].play()
+      idxAudio?.value[0]?.play()
       document.removeEventListener("click", musicAutoPlay)
     }
   })

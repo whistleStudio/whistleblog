@@ -1,19 +1,17 @@
-import { Request, Response } from "express";
-import express from "express"
-import {poemMap} from "../../public/dbMap.json"
+import express, { Request, Response } from "express";
 import Poem from "../db/models/Poem";
-import { IPoemSchema } from "../db/models/Poem";
+import {poemMap} from "../../public/dbMap.json"
+import {err} from "../../public/errMap.json"
 
 const rt = express.Router();
 
-type IPoem = Partial<IPoemSchema>
 
 interface IMenu {
-  author: string,
+  author: string
   list: ICate[]
 }
 interface ICate {
-  cate: string ,
+  cate: string 
   titles: any[] | []
 }
 
@@ -35,9 +33,26 @@ rt.get("/getMenu", (req:Request, res:Response) => {
         menuList.push({author: v.author, list: cateList})
       }
       res.json({err:0, menuList})
-    } catch(e) {console.log(e);res.json({err:5, msg: "database err"})}
+    } catch(e) {console.log(e);res.json(err[5])}
   })()
-
+  /* 请求单例 */
+  interface GetPoemRequer extends Request {
+    query: {
+      author: string
+      title: string
+    }
+  }
+  rt.get("/getPoem", (req:GetPoemRequer, res:Response) => {
+    let {author, title} = req.query
+    ;(async () => {
+      try {
+        let q = await Poem.findOne({author, title}, "author title txt imgUrl color date")
+        if (q) {
+          res.json({err:0, poemInfo: q})
+        } else res.json(err[1])
+      } catch(e){console.log(e); res.json(err[5])}
+    })()
+  })
 })
 
 export default rt

@@ -32,3 +32,16 @@
 
 1 poem页getMenu相关逻辑
 
+### [09291736]
+
+- client
+
+1 poem页作者，类目，诗歌选择切换相关逻辑；基本上OK了，就差个about
+
+2 music页 grid布局左边打散歌名
+
+- server
+
+1 poem- getPoem
+
+2 dbMap.json 内容扩充
