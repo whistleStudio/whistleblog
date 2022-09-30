@@ -17,7 +17,7 @@
           <div class="main-title">{{v.title}}</div>
           <div v-if="i!==1" class="main-content">{{v.content}}</div>
           <div v-else>
-            <audio ref="idxAudio" controls autoplay loop :src="indexMusic" volume="0.6">xxxx</audio>
+            <audio ref="idxAudio" controls :src="indexMusic" volume="0.6">xxxx</audio>
           </div>
         </li>
       </ul>
@@ -69,7 +69,11 @@
 
 
   onMounted(()=>{
-    document.addEventListener("click", musicAutoPlay)
+    // 只在首次打开时，生效
+    if (sessionStorage.getItem("canBgmPlay") === "yes") {
+      document.addEventListener("click", musicAutoPlay)
+      sessionStorage.setItem("canBgmPlay", "no")
+    }
     function musicAutoPlay () {
       idxAudio?.value[0]?.play()
       document.removeEventListener("click", musicAutoPlay)

@@ -67,7 +67,7 @@
   const actAuthor = computed<string>(() => menuList[actAuthorIdx.value].author)
   const actTitle = computed<string>(() => menuList[actAuthorIdx.value].list[actCateIdx.value].titles[actItemIdx.value])
   
-  /* 会主页 */  
+  /* 回到主页 */  
   function logoClick () {
     router.push("/")
   }
@@ -261,6 +261,7 @@
             margin-top: 20px;
             opacity: 0.9;
             &::after {
+              display: block;
               content: "";
               height: 100px;
             }

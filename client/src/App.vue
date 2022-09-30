@@ -1,5 +1,9 @@
 <script setup lang="ts">
-  
+  import { onBeforeMount } from 'vue';
+
+  onBeforeMount(() => {
+    sessionStorage.setItem("canBgmPlay", "yes")
+  })
 </script>
 
 <template>
@@ -7,5 +11,4 @@
 </template>
 
 <style scoped lang="scss">
-
 </style>
