@@ -4,7 +4,7 @@
     <div class="left flex-center">
       <div class="left-box">
         <ul v-if="rotateDegs.length===25">
-          <li class="flex-center" :class="{logo: i===12, playing: i===12&&isPlay}" v-for="(v, i) in titles" :key="i" @click="logoClick(i)" :style="{backgroundImage: i===12&&isPlay?`url(${imgUrl})`:''}">
+          <li class="flex-center" :class="{logo: i===12, playing: i===12&&isPlay}" v-for="(v, i) in musicList" :key="i" @click="logoClick(i)" :style="{backgroundImage: i===12&&isPlay?`url(${imgUrl})`:''}">
             <span v-if="i!==12" 
             @click="leftTitleClick(v)" :class="{active: v===actTitle}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v}}</span>
           </li>
@@ -24,18 +24,10 @@
 <script setup lang="ts">
   import { onBeforeMount, Ref, ref } from 'vue';
   import router from "@/router"
-import { computed } from '@vue/reactivity';
 
   let musicAudio: Ref<HTMLAudioElement> | Ref<null> = ref(null) 
   let rotateDegs: Ref<number[]> = ref([]), actTitle = ref("舟宿渡夏目漱石"), actSinger = ref("还潮"), isPlay = ref(false)
-  let titles: string[] = [
-    "你是雾我是酒馆","重庆女人","距离","无神论","最后只好躺下来",
-    "黑夜尽头","辣糖","我们不是只有现在吗", "还能孩子多久", "踊り子",
-    "如愿", "黑色静态", "公开的口信", "金鱼", "银河公园",
-    "失去爱情的摩托手", "沙发海", "Sofia", "我讨厌的是你的基因", "新少女祈祷",
-    "低级趣味", "华生", "星星唱歌经过拥挤的人群", "爱情的枪", "舟宿渡夏目漱石"
-  ]
-
+  let musicList: Ref<string[]> = ref([])
   let lyric = `我还是会想起
 梅时天刮的东南风
 六月里讲勿出的情愫
@@ -77,6 +69,23 @@ import { computed } from '@vue/reactivity';
     for (let v of Array(25)) {
       rotateDegs.value.push(Math.random()*360)
     }
+    fetch ("/api/music/getMusicList")
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+        // 随机排序
+        let rdList: string[] = []
+        let mcList: string[] = data.musicList
+        for (let v of Array(25)) {
+          let rdIdx: number = Math.floor(Math.random()*mcList.length)
+          rdList.push(...mcList.splice(rdIdx,1))
+        }
+        musicList.value = rdList
+        actTitle.value = rdList[Math.floor(Math.random()*25)]
+      } else {
+        alert(data.msg)
+      }
+    }))
   })
 </script>
 

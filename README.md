@@ -55,3 +55,13 @@
 - server
 
 1 数据库music创建
+
+### [10022213]
+
+- client 
+
+1 music - onBeforeMount getMusicList请求
+
+- server
+
+1 musicApi - getMusicList

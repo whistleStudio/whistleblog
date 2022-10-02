@@ -36,13 +36,13 @@ rt.get("/getMenu", (req:Request, res:Response) => {
     } catch(e) {console.log(e);res.json(err[5])}
   })()
   /* 请求单例 */
-  interface GetPoemRequer extends Request {
+  interface GetPoemRequest extends Request {
     query: {
       author: string
       title: string
     }
   }
-  rt.get("/getPoem", (req:GetPoemRequer, res:Response) => {
+  rt.get("/getPoem", (req:GetPoemRequest, res:Response) => {
     let {author, title} = req.query
     ;(async () => {
       try {

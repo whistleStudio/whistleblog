@@ -1,12 +1,3 @@
-interface A {
-  a: string
-  // b: number
-}
-interface B {
-  a: string
-  b: number
-}
-type C = A extends B ? 1:2
-
-let c:C = 2
+let a = [1,2]
+console.log(a.slice(0,2))
 

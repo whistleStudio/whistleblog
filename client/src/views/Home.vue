@@ -32,7 +32,7 @@
     txt: string,
     link: string
   }
-  const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%8E%8B%E7%A5%96%E8%B4%A4%20-%20%E4%BD%A0%E6%98%AF%E9%9B%BE%E6%88%91%E6%98%AF%E9%85%92%E9%A6%86.mp3"
+  const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/%E8%BF%98%E6%BD%AE%20-%20%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3.mp3"
   let indexLeftMode = ref<number>(1), menuMode = ref(false)
   let tim1 = ref(0), tim2 =ref(0)
   let idxAudio = ref<any>(null), lp = ref<any>(null)
@@ -43,7 +43,7 @@
   ])
   let mainList: any = reactive([
     {title:"海风", content: `你回首\n于是 整个天空\n都笑开了颜\n那会是群可爱的精灵\n乘着蓝蓝的海风\n把我推向六月明媚的你`},
-    {title:"你是雾我是酒馆", content: "xxxxx"},
+    {title:"舟宿渡夏目漱石", content: "xxxxx"},
     {title:"typescript", content: "xxxxx"}
   ])
 
