@@ -18,4 +18,21 @@ rt.get("/getMusicList", (req: Request, res: Response) => {
   })()
 })
 
+/* 请求播放歌曲信息 */
+interface GetAMIRequest extends Request {
+  query: {
+    actTitle: string
+  }
+}
+rt.get("/getActMusicInfo", (req: GetAMIRequest, res: Response) => {
+  let {actTitle} = req.query
+  ;(async () => {
+    try {
+      let actMusicInfo = await Music.findOne({title: actTitle}, "title singer src lyric imgUrl -_id")
+      if (actMusicInfo) res.json({err:0, actMusicInfo})
+      else res.json(err[1])
+    } catch(e){console.log(e);res.json(err[5])}
+  }) ()
+})
+
 export default rt

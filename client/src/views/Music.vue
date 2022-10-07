@@ -4,58 +4,48 @@
     <div class="left flex-center">
       <div class="left-box">
         <ul v-if="rotateDegs.length===25">
-          <li class="flex-center" :class="{logo: i===12, playing: i===12&&isPlay}" v-for="(v, i) in musicList" :key="i" @click="logoClick(i)" :style="{backgroundImage: i===12&&isPlay?`url(${imgUrl})`:''}">
+          <li class="flex-center" :class="{logo: i===12, playing: i===12&&isPlay}" v-for="(v, i) in musicList" :key="i" @click="logoClick(i)" :style="{backgroundImage: i===12&&isPlay?`url(${actMusic.imgUrl})`:''}">
             <span v-if="i!==12" 
-            @click="leftTitleClick(v)" :class="{active: v===actTitle}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v}}</span>
+            @click="leftTitleClick(v)" :class="{active: v===actMusic.title}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v}}</span>
           </li>
         </ul>
       </div>
     </div>
     <div class="right flex-center">
       <div class="song flex-col-ycenter">
-        <div class="song-info"><span>{{actTitle}}</span><span>&nbsp;&nbsp;-&nbsp;&nbsp;{{actSinger}}</span></div>
-        <audio ref="musicAudio" :src="songUrl" controls @play="isPlay=true" @pause="isPlay=false"></audio>
-        <div class="song-lyric">{{lyric}}</div>
+        <div class="song-info"><span>{{actMusic.title}}</span><span>&nbsp;&nbsp;-&nbsp;&nbsp;{{actMusic.singer}}</span></div>
+        <audio ref="musicAudio" :src="actMusic.src" controls autoplay @play="isPlay=true" @pause="isPlay=false"></audio>
+        <div class="song-lyric">{{actMusic.lyric}}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onBeforeMount, Ref, ref } from 'vue';
+  import { onBeforeMount, reactive, Ref, ref } from 'vue';
   import router from "@/router"
 
-  let musicAudio: Ref<HTMLAudioElement> | Ref<null> = ref(null) 
-  let rotateDegs: Ref<number[]> = ref([]), actTitle = ref("舟宿渡夏目漱石"), actSinger = ref("还潮"), isPlay = ref(false)
+  interface IMusicInfo {
+    title: string,
+    singer: string,
+    lyric: string,
+    src: string,
+    imgUrl: string,
+    [name:string]: string
+  }
+  // let musicAudio: Ref<HTMLAudioElement> | Ref<null> = ref(null) 
+  let musicAudio = ref<any>(null)
+  let rotateDegs: Ref<number[]> = ref([]), isPlay = ref(false)
   let musicList: Ref<string[]> = ref([])
-  let lyric = `我还是会想起
-梅时天刮的东南风
-六月里讲勿出的情愫
-人世总不飘忽
-我永远勿会忘记
-新江桥下的运沙船
-多少丧气的闲话
-我从昼过一直讲到涨潮
-告诉我 告诉我
-你爱不爱我
-我勿晓得 勿晓得
-我讲勿咋出
-告诉我 告诉我
-你爱不爱我
-我说 爱
-告诉我 告诉我
-你爱不爱我
-我勿晓得 勿晓得
-阿拉没该讲法
-告诉我 告诉我
-你爱不爱我
-我说 唉`
-  let imgUrl = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3.jpg"
-  let songUrl = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%B7%9D%E7%A6%BB/%E8%B7%9D%E7%A6%BB.m4a"
+  let actMusic: IMusicInfo = reactive({
+    title: "", singer: "", lyric: "", src: "", imgUrl: ""
+  })
 
   /* 左区点击歌名 */
   function leftTitleClick (v: string) {
-    actTitle.value = v
+    actMusic.title = v
+    getActMusicInfo(v)
+    // setTimeout(()=>{musicAudio?.value?.play()}, 500)
   }
   /* 回到主页 */  
   function logoClick (i: number) {
@@ -64,7 +54,20 @@
   function musicPlay (){
     console.log("plua")
   }
-/* ---------------------------------- */
+  /* 请求播放歌曲详细信息 */
+  function getActMusicInfo (actTitle: string) {
+    fetch (`/api/music/getActMusicInfo?actTitle=${actTitle}`)
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+        console.log(data)
+        Object.keys(data.actMusicInfo).forEach(e => {
+          actMusic[e] = data.actMusicInfo[e]
+        })
+      } else alert(data.msg)
+    }))
+  }
+  /* ---------------------------------- */
   onBeforeMount(() => {
     for (let v of Array(25)) {
       rotateDegs.value.push(Math.random()*360)
@@ -81,7 +84,8 @@
           rdList.push(...mcList.splice(rdIdx,1))
         }
         musicList.value = rdList
-        actTitle.value = rdList[Math.floor(Math.random()*25)]
+        actMusic.title = rdList[Math.floor(Math.random()*25)]
+        getActMusicInfo(actMusic.title)
       } else {
         alert(data.msg)
       }
@@ -95,11 +99,11 @@
   width: calc(100vw - 20px);
   height: 100vh;
   // background-color: bisque;
-  display: flex;
   .left {
     width: 50%;
     height: 100%;
     min-width: calc($leftBoxLen + 50px);
+    position: fixed;
     .left-box {
       width: $leftBoxLen;
       height: $leftBoxLen;
@@ -151,7 +155,8 @@
     }
   }
   .right {
-    flex: 1;
+    float: right;
+    width: 50%;
     height: 100%;
     .song {
       width: 80%;
@@ -171,11 +176,20 @@
         }
       }
       >audio {
-        margin-bottom: 20px;
+        flex: none;
+        display: block;
+        height: 30px;
         opacity: 0.5;
+        margin-bottom: 20px;
         &:hover {
           opacity: 0.9;
         }
+        // &::after {
+        //   display: block;
+        //   content: "xxx";
+        //   height: 50px;
+        //   background-color: red;
+        // }
       }
       .song-lyric {
         white-space: pre-line;
