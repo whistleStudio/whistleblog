@@ -34,7 +34,7 @@
   }
   const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/%E8%BF%98%E6%BD%AE%20-%20%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3.mp3"
   let indexLeftMode = ref<number>(1), menuMode = ref(false)
-  let tim1 = ref<NodeJS.Timeout>(), tim2 =ref<NodeJS.Timeout>()
+  let tim1 = ref<number>(), tim2 =ref<number>()
   let idxAudio = ref<any>(null), lp = ref<any>(null)
   let menuList: Array<IMenuList> = reactive([
     {txt: "诗", link: "/poem"},
