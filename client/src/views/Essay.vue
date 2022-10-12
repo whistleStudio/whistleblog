@@ -20,9 +20,18 @@
             <li class="cate-icon" @click="cateIconClick(0)">⬅</li>
           </ul>
         </div>
-        <ul>
-          <li v-for="(v, i) in 10"></li>
+        <ul class="article" v-if="showMode">
+          <li class="article-li" v-for="(v, i) in essayList" :key="i">
+            <p class="article-title">{{v.title}}</p>
+            <p class="article-frag">{{v.sum}}</p>
+            <ul class="flex-center">
+              <li v-for="(cv, ci) in v.tag.split('|')" :key="ci"><span></span><span>&nbsp;&nbsp;{{cv}}</span></li>
+            </ul>
+          </li>
         </ul>
+        <div class="content" v-else>
+          <iframe scrolling="no" src="https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/essay/test/flex%20%26%20grid%20Layout/flex%20%26%20grid%20Layout.html" frameborder="0"></iframe>
+        </div>
       </div>
     </div>
   </div>
@@ -32,8 +41,19 @@
 <script setup lang="ts">
   import router from '@/router';
   import { onMounted, ref} from "vue"
+
   let kwIp = ref<any>(null)
-  let isCateExp = ref<boolean>(false)
+  let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([])
+  const artLiHeight = 150
+  let artHeight: number, pageNum: number
+
+  interface IEssay {
+    tag: string,
+    title: string,
+    sum: string,
+    src: string,
+    genDate: Date
+  }
   /* 回到主页 */  
   function logoClick () {
     router.push("/")
@@ -47,6 +67,18 @@
   onMounted(() => {
     // 默认输入框聚焦
     kwIp?.value?.focus()
+    // console.log(document.documentElement.clientHeight)
+    artHeight = document.documentElement.clientHeight - 170 -50 //search 170, cate 50
+    pageNum = Math.floor(artHeight / artLiHeight) * 3 
+    console.log(pageNum)
+    fetch(`/api/essay/pageList?pageSkip=0&pageNum=${pageNum*2}`)
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+        console.log(data.essayList)
+        essayList.value = data.essayList
+      } else alert(data.msg)
+    }))
   })
 </script>
 
@@ -71,6 +103,9 @@
           background: url("wove3.svg") center/cover no-repeat;
           margin-right: 20px;
           cursor: pointer;
+          &:hover {
+            opacity: 0.6;
+          }
         }
         >span {
           display: inline-block;
@@ -79,7 +114,7 @@
         }
         input {
           flex: 1;
-          font: 30px/35px $fontF;
+          font: 25px/35px $fontF;
           height: 35px;
           width: 80%;
           border: none;
@@ -93,11 +128,12 @@
       }
       .main {
         width: 100%;
-        height: 600px;
+        // height: 3000px;
         // background-color: rgb(153, 153, 95);
         .cate {
-          float: left;
-          font: 20px/40px $fontF;
+          display: flex;
+          justify-content: flex-start;
+          font: 20px/50px $fontF;
           >div:first-of-type {
             span {
               font-weight: bold;
@@ -124,20 +160,71 @@
             }
           }
         }
-        >ul {
+        .article {
           width: 100%;
           display: flex;
           flex-wrap: wrap;
-          >li {
+          .article-li {
             $width: 32.9%;
             width: $width;
             height: 150px;
             background-color: rgb(245,245,245);
-            // border: 1px solid black;
             margin-bottom: calc((100% - $width * 3) / 2);
+            text-align: left;
+            box-sizing: border-box;
+            border-radius: 3px;
+            padding: 15px;
+            cursor: pointer;
             &:not(:nth-of-type(3n)) {
               margin-right: calc((100% - $width * 3) / 2);
             }
+            &:hover {
+              background-color: rgb(238, 238, 238);
+            }
+            .article-title {
+              font:  20px/23px $fontF;
+              opacity: 0.9;
+            }
+            .article-frag {
+              margin: 10px 0 20px;
+              width: 100%;
+              white-space: wrap;
+              height: 50px;
+              font: 17px/25px $fontF;
+              word-wrap: break-word;
+              overflow: hidden;
+              opacity: 0.6;
+            }
+            >ul {
+              justify-content: flex-start;
+              font: 14px/17px $fontF;
+              opacity: 0.4;
+              li {
+                margin-right: 20px;
+                span {
+                  display: inline-block;
+                  vertical-align: middle;
+                  &:first-of-type {
+                    width: 14px;
+                    height: 14px;
+                    background-color: rgb(235, 177, 71);
+                    border-radius: 50%;
+                  }
+                  &:last-of-type {
+                    white-space: pre-wrap;
+                  }
+                }
+              }
+            }
+          }
+        }
+        .content {
+          width: 100%;
+          height: 100%;
+          iframe {
+            width: 100%;
+            height: 100%;
+            
           }
         }
       }  

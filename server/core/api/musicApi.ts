@@ -1,5 +1,4 @@
-import express, {request, Request, Response} from "express";
-import mongoose from "mongoose";
+import express, {Request, Response} from "express";
 import {err} from "../../public/errMap.json"
 import Music from "../db/models/Music";
 
