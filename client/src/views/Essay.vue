@@ -21,7 +21,7 @@
           </ul>
         </div>
         <ul class="article" v-if="showMode">
-          <li class="article-li" v-for="(v, i) in essayList" :key="i">
+          <li class="article-li" v-for="(v, i) in essayList" :key="i" @click="articleLiClick(v)">
             <p class="article-title">{{v.title}}</p>
             <p class="article-frag">{{v.sum}}</p>
             <ul class="flex-center">
@@ -30,7 +30,7 @@
           </li>
         </ul>
         <div class="content" v-else>
-          <iframe scrolling="no" src="https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/essay/test/flex%20%26%20grid%20Layout/flex%20%26%20grid%20Layout.html" frameborder="0"></iframe>
+          <iframe scrolling="no" :src="(actEssay as IEssay).src" frameborder="0"></iframe>
         </div>
       </div>
     </div>
@@ -42,11 +42,6 @@
   import router from '@/router';
   import { onMounted, ref} from "vue"
 
-  let kwIp = ref<any>(null)
-  let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([])
-  const artLiHeight = 150
-  let artHeight: number, pageNum: number
-
   interface IEssay {
     tag: string,
     title: string,
@@ -54,6 +49,11 @@
     src: string,
     genDate: Date
   }
+  let kwIp = ref<any>(null)
+  let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([]), actEssay = ref<IEssay>()
+  const artLiHeight = 150
+  let artHeight: number, pageNum: number
+
   /* 回到主页 */  
   function logoClick () {
     router.push("/")
@@ -62,6 +62,11 @@
   function cateIconClick (exp: number) {
     if (exp) isCateExp.value = true
     else isCateExp.value = false
+  }
+  /* 切换至文章具体内容 */
+  function articleLiClick (e: IEssay) {
+    actEssay.value = e
+    showMode.value = 0
   }
   /* ---------------------- */
   onMounted(() => {
