@@ -9,17 +9,14 @@
       <div class="main">
         <div class="cate flex-center">
           <div>
-            <span>Vue</span>
+            <span>All</span>
             <span class="cate-icon" :class="{'cate-icon-exp': isCateExp}" @click="cateIconClick(1)">&nbsp;{{isCateExp ? '|' : '➡'}}</span>
           </div>
           <ul v-if="isCateExp" class="flex-center">
-            <li>JavaScrpit</li>
-            <li>NodeJs</li>
-            <li>TypeScript</li>
-            <li>Vue</li>
+            <li v-for="(v, i) in articleCate" :key="i" @click="cateClick(v)">{{v}}</li>
             <li class="cate-icon" @click="cateIconClick(0)">⬅</li>
           </ul>
-        </div>
+        </div> 
         <ul class="article" v-if="showMode">
           <li class="article-li" v-for="(v, i) in essayList" :key="i" @click="articleLiClick(v)">
             <p class="article-title">{{v.title}}</p>
@@ -51,7 +48,7 @@
   }
   let kwIp = ref<any>(null)
   let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([]), actEssay = ref<IEssay>()
-  const artLiHeight = 150
+  const artLiHeight = 150, articleCate = ["All", "JavaScript", "NodeJs", "Vue", "TypeScript"]
   let artHeight: number, pageNum: number
 
   /* 回到主页 */  
@@ -67,6 +64,16 @@
   function articleLiClick (e: IEssay) {
     actEssay.value = e
     showMode.value = 0
+  }
+  /* 请求类别文章 */
+  function cateClick (cate: string) {
+    fetch(`/api/essay/getCateEssay?cate=${cate}`)
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+
+      } else alert(data.msg)
+    }))
   }
   /* ---------------------- */
   onMounted(() => {
