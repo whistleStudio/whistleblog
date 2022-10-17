@@ -83,7 +83,7 @@
     artHeight = document.documentElement.clientHeight - 170 -50 //search 170, cate 50
     pageNum = Math.floor(artHeight / artLiHeight) * 3 
     console.log(pageNum)
-    fetch(`/api/essay/pageList?pageSkip=0&pageNum=${pageNum*2}`)
+    fetch(`/api/essay/pageList?pageSkip=0&pageNum=${pageNum*2}&cate=All`)
     .then(res => res.json()
     .then(data => {
       if (!data.err) {
