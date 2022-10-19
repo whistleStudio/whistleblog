@@ -3,6 +3,20 @@ import Essay from "../db/models/Essay"
 import {err} from "../../public/errMap.json"
 
 const rt = express.Router()
+const artCate = {
+  JavaScript: `rgb(235, 177, 71)`,
+  NodeJs: `rgb(124, 194, 145)`,
+  Vue: `rgb(182, 218, 126)`,
+  TypeScript: `rgb(123, 179, 211)`,
+  Others: `rgb(240, 197, 212)`
+}
+
+
+/* 获取目录 */
+rt.get("/getCate", (req: Request, res: Response) => {
+  res.json({err:0, cate: artCate})
+})
+
 
 interface pageListRequset extends Request {
   query:{

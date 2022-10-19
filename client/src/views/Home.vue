@@ -12,12 +12,12 @@
     </div>
     <div class="index-right flex-center">
       <ul class="main flex-col-ycenter">
-        <li  v-for="(v,i) in mainList" :key="i">
+        <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
           <div class="main-cate">{{menuList[i].txt}}</div>
-          <div class="main-title">{{v.title}}</div>
-          <div v-if="i!==1" class="main-content">{{v.content}}</div>
+          <div class="main-title">{{mainList[k].title}}</div>
+          <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
-            <audio ref="idxAudio" controls :src="indexMusic" volume="0.6">xxxx</audio>
+            <audio ref="idxAudio" controls :src="mainList[k].src" volume="0.6"></audio>
           </div>
         </li>
       </ul>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, Ref, ref, onMounted } from 'vue';
+  import { reactive, Ref, ref, onMounted, onBeforeMount } from 'vue';
   import router from "@/router"
   interface IMenuList  {
     txt: string,
@@ -41,11 +41,12 @@
     {txt: "乐", link: "/music"},
     {txt: "记", link: "/essay"}
   ])
-  let mainList: any = reactive([
-    {title:"海风", content: `你回首\n于是 整个天空\n都笑开了颜\n那会是群可爱的精灵\n乘着蓝蓝的海风\n把我推向六月明媚的你`},
-    {title:"舟宿渡夏目漱石", content: "xxxxx"},
-    {title:"typescript", content: "xxxxx"}
-  ])
+  // let mainList: any = reactive([
+  //   {title:"海风", content: `你回首\n于是 整个天空\n都笑开了颜\n那会是群可爱的精灵\n乘着蓝蓝的海风\n把我推向六月明媚的你`},
+  //   {title:"舟宿渡夏目漱石", src: "xxxxx"},
+  //   {title:"typescript", content: "xxxxx"}
+  // ])
+  let mainList = ref<any>({})
 
   /* 左边动效展示 */
   function changeLeftMode (mode: number) {
@@ -67,6 +68,14 @@
     router.push(menuList[i].link)
   }
 
+  /* ------------------------------------- */
+  onBeforeMount(() => {
+    fetch(`/api/home/getHomeData`)
+    .then(res => res.json()
+    .then(data => {
+      mainList.value = data.homeData
+    }))
+  })
 
   onMounted(()=>{
     // 只在首次打开时，生效

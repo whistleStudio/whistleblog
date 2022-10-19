@@ -90,3 +90,17 @@
 
 1 essay - 分页请求，关键词搜索请求
 
+### [10191732]
+
+- client
+
+1 essay - iframe跨域消息通信，解决高度自适应；自动化脚本formatHtml.js解决typora导出html文件格式问题
+
+2 essay - 目录也改用动态请求
+
+- server
+
+1 essayApi - getCate
+
+2  增加homeApi, 分发首页数据
+
