@@ -85,7 +85,8 @@
   }
   /* 点击侧边诗标题 */
   function cateItemClick (ci: number) {
-    actItemStyIdx.value = 100*actCateIdx.value + actItemIdx.value //控制标题激活样式
+    actItemStyIdx.value = 100*actCateIdx.value + ci //控制标题激活样式
+    console.log(actItemStyIdx.value)
     actItemIdx.value = ci
     getPoem(actAuthor.value, actTitle.value)
   }

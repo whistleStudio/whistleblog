@@ -22,6 +22,7 @@
         </li>
       </ul>
     </div>
+    <div class="icp"><a href="https://beian.miit.gov.cn/#/Integrated/index">备案号|苏ICP备19068688号-1</a></div>
   </div>
 </template>
 
@@ -32,20 +33,14 @@
     txt: string,
     link: string
   }
-  const indexMusic = "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/%E8%BF%98%E6%BD%AE%20-%20%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3.mp3"
   let indexLeftMode = ref<number>(1), menuMode = ref(false)
   let tim1 = ref<ReturnType <typeof setTimeout>>(), tim2 =ref<ReturnType <typeof setTimeout>>()
-  let idxAudio = ref<any>(null), lp = ref<any>(null)
+  let idxAudio = ref<any>(null)
   let menuList: Array<IMenuList> = reactive([
     {txt: "诗", link: "/poem"},
     {txt: "乐", link: "/music"},
     {txt: "记", link: "/essay"}
   ])
-  // let mainList: any = reactive([
-  //   {title:"海风", content: `你回首\n于是 整个天空\n都笑开了颜\n那会是群可爱的精灵\n乘着蓝蓝的海风\n把我推向六月明媚的你`},
-  //   {title:"舟宿渡夏目漱石", src: "xxxxx"},
-  //   {title:"typescript", content: "xxxxx"}
-  // ])
   let mainList = ref<any>({})
 
   /* 左边动效展示 */
@@ -167,7 +162,13 @@
       flex-direction: column;
       .main {
         li {
+          max-width: 600px;
           height: 19rem;
+          // background-color: olive;
+          overflow: hidden;
+          &:last-of-type {
+            .main-content{text-align: left;}
+          }
           .main-cate {
             font: bold 1.8rem/5rem $fontF;
             opacity: 0.2;
@@ -179,14 +180,29 @@
             white-space:pre-line;
             line-height: 1.5rem;
             font-size: 0.9rem;
-            opacity: 0.9;
+            opacity: 0.85;
           }
           audio {
             margin-top: 0.85rem;
             height: 2rem;
+            opacity: 0.85;
           }
         }
       }
+    }
+    .icp {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      >a {
+        color: white;
+        cursor: pointer;
+        &:hover {
+          color: rgb(240,240,240);
+        }
+      }
+      // color: white;
     }
   }
   @keyframes wave {
