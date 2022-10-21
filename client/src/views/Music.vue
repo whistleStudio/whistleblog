@@ -118,14 +118,14 @@
           box-sizing: border-box;
           // border: 1px solid gray;
           &.logo {
-            background: url("wove3.svg") center/contain no-repeat;
+            background: url("/wove3.svg") center/contain no-repeat;
             cursor: pointer;
             opacity: 0.9;
             z-index: 2;
             border-radius: 50%;
             &:hover {
               background: center/cover no-repeat;
-              background-image: url("wove3.svg") !important;
+              background-image: url("/wove3.svg") !important;
               opacity: 0.6;
             }
             &.playing {

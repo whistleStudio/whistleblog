@@ -4,14 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const Schema = mongoose_1.default.Schema;
-const poemSchema = new Schema({
-    cate: String,
+const essaySchema = new mongoose_1.default.Schema({
+    tag: String,
     title: String,
-    author: String,
-    imgUrl: String,
-    txt: String,
-    date: String
+    sum: String,
+    src: String,
+    genDate: Date
 });
-const Poem = mongoose_1.default.model("poem", poemSchema);
-exports.default = Poem;
+const Essay = mongoose_1.default.model("essay", essaySchema);
+exports.default = Essay;

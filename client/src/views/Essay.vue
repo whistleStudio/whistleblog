@@ -183,7 +183,7 @@ onMounted(() => {
       .logo {
         width: 50px;
         height: 50px;
-        background: url("wove3.svg") center/cover no-repeat;
+        background: url("/wove3.svg") center/cover no-repeat;
         margin-right: 20px;
         cursor: pointer;
         &:hover {

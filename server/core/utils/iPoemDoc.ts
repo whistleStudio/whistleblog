@@ -11,24 +11,34 @@ async function main() {
   console.log(`db:${DBNAME} connected on port:${PORT}`)
 
   const oneDoc: IPoemSchema = {
-    cate: "2018",
-    title: "取经天路长",
-    author: "哨子",
-    // imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/poem/whistle/%E5%A5%B3%E5%AD%90.png",
-    txt: `温度五六七
-    红色列车终点下起雨
-    银杏 湿漉了傍晚站台
-    信号灯 灼烧了等待徘徊
-    书袋中了了的几片面包
-    和着文字的碎屑
+    cate: "0w0",
+    title: "又",
+    author: "他界",
+    // imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/poem/%E4%BB%96%E7%95%8C/%E9%9B%B7%E9%9B%A8.jpg",
+    txt: `想你的时候山不说话，
+    旧车厢里盛满了枯萎的铁皮。
+    路往离你更远的地方去了，
+    轰鸣声响起的时候，
+    正好开出一朵生锈的花。
     
-    昨日的火锅就像是一场梦
-    今天的我又饥肠辘辘
-    光影晕染着天空
-    脚步被拉扯很长
-    翼翼地
-    漫过街巷`,
-    date: "2018-03"
+    这注定是一趟慢条斯里的远程
+    轨道冗长 像一个昏昏欲睡的故事
+    像午后懒困的盹
+    而远处的湖川也缄默
+    大鱼亲吻它的涟漪
+    
+    东南方有湿热的云 绵密的雨
+    糯软的糕点 呢喃的歌
+    有恰如其分的浪漫
+    无你
+    
+    路途更远的时候
+    你的名字就呼之欲出
+    从胸膛跑出来，躲在我的鼻息里
+    我离你而去
+    再为你而来
+    这正是离别的意义`,
+    date: "你 2017-04"
   }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
   await Poem.create(oneDoc)

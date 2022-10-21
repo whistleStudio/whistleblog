@@ -30,7 +30,7 @@ rt.get("/pageList", (req: pageListRequset, res: Response) => {
   const cate = req.query.cate
   const pageNum: number = parseInt(req.query.pageNum)
   const pageSkip: number = parseInt(req.query.pageSkip)
-  console.log(req.query)
+  // console.log(req.query)
   ;(async () => {
     try {
       if (cate==="All") {
@@ -62,7 +62,7 @@ rt.get("/kwSearch", (req: kwSearchRequest, res: Response) => {
   ;(async () => {
     try {
     let searchList = await Essay.find(filter, "-_id")
-      console.log("sL", searchList.length) 
+      // console.log("sL", searchList.length) 
       res.json({err:0, searchList})
     } catch(e){res.json(err[5])}
   })()

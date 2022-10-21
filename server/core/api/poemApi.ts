@@ -16,7 +16,7 @@ interface ICate {
 }
 
 rt.get("/", (req:Request, res:Response) => {
-  console.log("poem")
+  // console.log("poem")
   res.json({err: 0})
 })
 /* 请求目录 */

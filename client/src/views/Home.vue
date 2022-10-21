@@ -106,7 +106,7 @@
         .logo-pic {
           width: 100%;
           height: 100%;
-          background: url("wove.svg");
+          background: url("/wove.svg");
           opacity: 0.7;
           filter: invert(100%);
         }

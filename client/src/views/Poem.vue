@@ -139,7 +139,7 @@
         .logo {
           width: 40px;
           height: 40px;
-          background: url("wove.svg");
+          background: url("/wove.svg");
           opacity: 0.75;
           border: 2.5px solid white;
           border-radius: 50%;
@@ -186,6 +186,7 @@
         display: flex;
         align-items: center;
         ul {
+          text-align: left;
           .cate-li {
             >span {
               font: 22px/70px $fontF;
@@ -200,7 +201,7 @@
             }
             >ul {
               .cate-item {
-                text-align: start;
+                text-align: left;
                 text-indent: 14px;
                 font: 15px/30px $fontF;
                 opacity: 0.7;
@@ -235,8 +236,8 @@
               width: 100%;
               height: 100%;
               background:  center/cover no-repeat;
-              -webkit-mask : url("pic/poemask.png") center/contain no-repeat;
-              mask: url("pic/poemask.png") center/contain no-repeat;
+              -webkit-mask : url("/pic/poemask.png") center/contain no-repeat;
+              mask: url("/pic/poemask.png") center/contain no-repeat;
               position: absolute;
               opacity: 0.5;
             }

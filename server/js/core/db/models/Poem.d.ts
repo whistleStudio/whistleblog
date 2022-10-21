@@ -3,9 +3,10 @@ interface IPoemSchema {
     cate: string;
     title: string;
     author: string;
-    imgUrl: string;
+    imgUrl?: string;
     txt: string;
     date: string;
+    color?: number;
 }
 declare const Poem: mongoose.Model<IPoemSchema, {}, {}, {}, mongoose.Schema<IPoemSchema, mongoose.Model<IPoemSchema, any, any, any, any>, {}, {}, {}, {}, "type", IPoemSchema>>;
 export default Poem;
