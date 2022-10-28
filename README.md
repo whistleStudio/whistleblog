@@ -133,3 +133,9 @@
 - mob
 
 开始写移动端页面，vite基本配置OK，home基本样式内容OK
+
+### [10281724]
+
+- mob
+
+移动端peom music页OK

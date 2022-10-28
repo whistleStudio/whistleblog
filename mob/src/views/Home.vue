@@ -8,11 +8,11 @@
     <div v-else class="content">
       <ul class="main flex-col-ycenter">
         <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
-          <div class="main-cate">{{menuList[i].txt}}</div>
+          <div class="main-cate" @click="toPage(menuList[i].link)">{{menuList[i].txt}}</div>
           <div class="main-title">{{mainList[k].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
-            <audio :autoplay="true" ref="idxAudio" controls :src="mainList[k].src" volume="0.6" @play="disAutoPlay"></audio>
+            <audio :autoplay="canBgmPlay" ref="idxAudio" controls :src="mainList[k].src" volume="0.6" @play="disAutoPlay"></audio>
           </div>
         </li>
       </ul>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount } from 'vue';
+import router from "@/router"
 interface IMenuList  {
   txt: string,
   link: string
@@ -41,6 +42,10 @@ function showMenu () {
   setTimeout(() => {
     showMode.value = 0
   }, 650)
+}
+/* 页面跳转 */
+function toPage (link: string) {
+  router.push(link)
 }
 /* 禁止自动播放 */
 function disAutoPlay () {
