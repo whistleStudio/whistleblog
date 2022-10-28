@@ -139,3 +139,12 @@
 - mob
 
 移动端peom music页OK
+
+### [10290104]
+
+- mob
+
+移动端 essay页OK
+
+- 新增mobsv
+- 服务器部署完毕

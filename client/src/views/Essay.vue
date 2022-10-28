@@ -59,7 +59,7 @@ interface IEssay {
 // input, iframe, content - DOM对象
 let kwIp = ref<any>(null), ifr = ref<any>(null), artContent = ref<any>(null), articleCate = ref<string[]>(["All"]), artCate = ref<{[propName: string]:string}>({})
 // showMode 1-列表 0-文章 2-搜索；artHeight 除去搜索，目录单页列表占满时高度
-const artLiHeight = 150, articleCate2 = ["All", "JavaScript", "NodeJs", "Vue", "TypeScript", "Others"]
+const artLiHeight = 150
 let artHeight: number, maxTopScroll = 0, pageIdx = 0
 let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([]), actEssay = ref<IEssay>(), actCate = ref<string>(articleCate.value[0]),
   pageCount = ref<number>(0), kw = ref<string>(""), searchList = ref<IEssay[]>([])
@@ -239,7 +239,7 @@ onMounted(() => {
         >ul {
           li:not(:last-of-type) {
             opacity: 0.5;
-            margin: 0 35px;
+            margin: 0 15px;
             cursor: pointer;
             &:hover {
               opacity: 0.9;

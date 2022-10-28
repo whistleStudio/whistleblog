@@ -59,7 +59,7 @@ interface IEssay {
 // input, iframe, content - DOM对象
 let kwIp = ref<any>(null), ifr = ref<any>(null), artContent = ref<any>(null), articleCate = ref<string[]>(["All"]), artCate = ref<{[propName: string]:string}>({})
 // showMode 1-列表 0-文章 2-搜索；artHeight 除去搜索，目录单页列表占满时高度
-const artLiHeight = 150, articleCate2 = ["All", "JavaScript", "NodeJs", "Vue", "TypeScript", "Others"]
+const artLiHeight = 120
 let artHeight: number, maxTopScroll = 0, pageIdx = 0
 let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([]), actEssay = ref<IEssay>(), actCate = ref<string>(articleCate.value[0]),
   pageCount = ref<number>(0), kw = ref<string>(""), searchList = ref<IEssay[]>([])
@@ -119,15 +119,19 @@ function ipFocus() {
 
 /* 关键词搜索 */
 function kwSearch (keyword: string) {
-  fetch(`/api/essay/kwSearch?kw=${keyword}`)
-  .then(res => res.json()
-  .then(data => {
-    if (!data.err) {
-      // console.log(data.searchList)
-      searchList.value = data.searchList
-      showMode.value = 2 
-    } else alert(data.msg)
-  }))
+  if (keyword.trim()==="") {
+    cateClick(0, pageCount.value*2, "All")
+  } else {
+    fetch(`/api/essay/kwSearch?kw=${keyword}`)
+    .then(res => res.json()
+    .then(data => {
+      if (!data.err) {
+        // console.log(data.searchList)
+        searchList.value = data.searchList
+        showMode.value = 2 
+      } else alert(data.msg)
+    }))
+  }
 }
 
 /* 请求iframe内容高度 */
@@ -141,8 +145,8 @@ onMounted(() => {
   getCate()
   // 默认输入框聚焦
   kwIp?.value?.focus()
-  artHeight = document.documentElement.clientHeight - 170 - 50 //search 170, cate 50
-  pageCount.value = Math.floor(artHeight / artLiHeight) * 3
+  artHeight = document.documentElement.clientHeight - 110 //search 170, cate 50
+  pageCount.value = Math.floor(artHeight / artLiHeight)
   // console.log(pageCount.value)
   // 预先请求一页的内容
   cateClick(0, pageCount.value*2, "All")
@@ -180,8 +184,8 @@ onMounted(() => {
       opacity: 0.9;
       justify-content: flex-start;
       .logo {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         background: url("/wove3.svg") center/cover no-repeat;
         margin-right: 20px;
         cursor: pointer;
@@ -191,12 +195,12 @@ onMounted(() => {
       }
       >span {
         display: inline-block;
-        font: 50px/70px $fontF;
+        font: 45px/70px $fontF;
         margin-right: 20px;
       }
       input {
         flex: 1;
-        font: 25px/35px $fontF;
+        font: 21px/35px $fontF;
         height: 35px;
         width: 80%;
         border: none;
@@ -213,7 +217,7 @@ onMounted(() => {
       .cate {
         display: flex;
         justify-content: flex-start;
-        font: 20px/50px $fontF;
+        font: 17px/30px $fontF;
         >div:first-of-type {
           span {
             font-weight: bold;
@@ -236,9 +240,11 @@ onMounted(() => {
           cursor: default !important;
         }
         >ul {
+          flex-wrap: wrap;
+          justify-content: flex-start;
           li:not(:last-of-type) {
             opacity: 0.5;
-            margin: 0 35px;
+            margin: 0 12px;
             cursor: pointer;
             &:hover {
               opacity: 0.9;
@@ -249,17 +255,24 @@ onMounted(() => {
       .article {
         width: 100%;
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        // flex-wrap: wrap;
+        margin-top: 10px;
+        &::after {
+          display: block;
+          content: "";
+          height: 10px;
+        }
         .article-li {
           $width: 32.9%;
-          width: $width;
-          height: 150px;
+          width: 100%;
+          height: 120px;
           background-color: rgb(245, 245, 245);
-          margin-bottom: calc((100% - $width * 3) / 2);
+          margin-bottom: 10px;
           text-align: left;
           box-sizing: border-box;
-          border-radius: 3px;
-          padding: 15px;
+          border-radius: 5px;
+          padding: 10px;
           cursor: pointer;
           &:not(:nth-of-type(3n)) {
             margin-right: calc((100% - $width * 3) / 2);
@@ -272,18 +285,18 @@ onMounted(() => {
             opacity: 0.9;
           }
           .article-frag {
-            margin: 10px 0 20px;
+            margin: 10px 0 15px;
             width: 100%;
             white-space: wrap;
-            height: 50px;
-            font: 15px/25px $fontF;
+            height: 40px;
+            font: 12px/20px $fontF;
             word-wrap: break-word;
             overflow: hidden;
             opacity: 0.6;
           }
           >ul {
             justify-content: flex-start;
-            font: 14px/17px $fontF;
+            font: 12px/12px $fontF;
             opacity: 0.4;
             li {
               margin-right: 20px;
@@ -291,8 +304,8 @@ onMounted(() => {
                 display: inline-block;
                 vertical-align: middle;
                 &:first-of-type {
-                  width: 14px;
-                  height: 14px;
+                  width: 12px;
+                  height: 12px;
                   background-color: rgb(240, 197, 212);
                   border-radius: 50%;
                 }
@@ -308,7 +321,7 @@ onMounted(() => {
       .content {
         width: 100%;
         height: 100%;
-
+        margin-bottom: -50px;
         iframe {
           width: 100%;
           height: 100%;
@@ -318,6 +331,8 @@ onMounted(() => {
 
       .result {
         >ul {
+          margin-top: 10px;
+          width: 100%;
           >li {
             margin-bottom: 30px;
             text-align: left;
@@ -328,6 +343,8 @@ onMounted(() => {
               font: 22px/40px $fontF;
             }
             .result-sum {
+              width: 100%;
+              overflow: hidden;
               opacity: 0.8;
             }
           }
