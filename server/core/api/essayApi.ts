@@ -8,6 +8,7 @@ const artCate = {
   NodeJs: `rgb(124, 194, 145)`,
   Vue: `rgb(182, 218, 126)`,
   TypeScript: `rgb(123, 179, 211)`,
+  Flutter: `rgb(83, 95, 150)`,
   Others: `rgb(240, 197, 212)`
 }
 

@@ -176,7 +176,7 @@ onMounted(() => {
     .search {
       width: 100%;
       height: 70px;
-      // background-color: rgb(67, 99, 67);
+      // background-color: rgb(83, 95, 150);
       margin: 50px auto;
       opacity: 0.9;
       justify-content: flex-start;

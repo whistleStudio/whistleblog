@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const path_1 = __importDefault(require("path"));
 require("./db/connect");
 const homeApi_1 = __importDefault(require("./api/homeApi"));
 const poemApi_1 = __importDefault(require("./api/poemApi"));
@@ -14,7 +13,7 @@ const app = (0, express_1.default)();
 const PORT = 8181;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.static(path_1.default.join(__dirname, '../dist')));
+// app.use(express.static(path.join(__dirname, '../dist')))
 app.use("/api/home", homeApi_1.default);
 app.use("/api/poem", poemApi_1.default);
 app.use("/api/music", musicApi_1.default);
