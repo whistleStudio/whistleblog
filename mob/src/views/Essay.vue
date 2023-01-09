@@ -282,7 +282,9 @@ onMounted(() => {
           }
           .article-title {
             font: 17px/23px $fontF;
+            height: 23px;
             opacity: 0.9;
+            overflow: hidden;
           }
           .article-frag {
             margin: 10px 0 15px;

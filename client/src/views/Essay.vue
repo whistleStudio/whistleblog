@@ -269,8 +269,10 @@ onMounted(() => {
             background-color: rgb(238, 238, 238);
           }
           .article-title {
+            height: 23px;
             font: 17px/23px $fontF;
             opacity: 0.9;
+            overflow: hidden;
           }
           .article-frag {
             margin: 10px 0 20px;

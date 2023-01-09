@@ -5,12 +5,12 @@
       <div class="head-bar">
         <div class="logo" @click="logoClick"></div>
         <ul>
-          <li @click="headAuthorClick(i)" v-for="(v, i) in menuList" :key="i" :class="{active: actAuthorIdx===i}">{{v.author}}</li>
-          <li>@关于</li>
+          <li @click="headAuthorClick(i)" v-for="(v, i) in menuList" :key="i" :class="{active: actAuthorIdx===i && isAbout===false}">{{v.author}}</li>
+          <li @click="headAbout" :class="{active: isAbout===true}">@关于</li>
         </ul>
       </div>
     </div>
-    <div class="main">
+    <div class="main" v-if="!isAbout">
       <!-- 目录 -->
       <div class="cate">
         <ul>
@@ -35,6 +35,16 @@
           <div class="poem-bot"><span v-if="poemInfo.author!=='他界'" class="poem-author">{{poemInfo.author}}&nbsp;&nbsp;&nbsp;</span><span class="poem-date">{{poemInfo.date}}</span></div>
         </div>
       </div>
+    </div>
+    <div class="main" v-else>
+      <ul class="main-about">
+        <li>&lt;波 文&gt;</li>
+        <li>关于哨子：是站长本人没错了，为什么要叫哨子，因为他从初中开始QQ名就一直叫whistle</li>
+        <li>关于子秋：是站长的爷爷，这是他的笔名，内容源自他的诗集《红枫》。现在，他正在旅行中</li>
+        <li>关于他界：里面是每个和我们一样，飘荡在这世间的吟游诗人</li>
+        <li class="mail">--------------------------------------------</li>
+        <li class="mail">有啥想说的，可以留言到这里💬435424527@qq.com</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -63,7 +73,7 @@
 
   let menuList: Array<IMenuInfo> = reactive([])
   let poemInfo: Ref<IpoemInfo> = ref({})
-  let actAuthorIdx =ref(0), actCateIdx = ref(0), actItemIdx = ref(0), isMenuCollapse = ref(true), actItemStyIdx = ref(0)
+  let actAuthorIdx =ref(0), actCateIdx = ref(0), actItemIdx = ref(0), isMenuCollapse = ref(true), actItemStyIdx = ref(0), isAbout = ref(false)
   const actAuthor = computed<string>(() => menuList[actAuthorIdx.value].author)
   const actTitle = computed<string>(() => menuList[actAuthorIdx.value].list[actCateIdx.value].titles[actItemIdx.value])
   
@@ -73,6 +83,7 @@
   }
   /* 点击顶部作者 */
   function headAuthorClick (i: number) {
+    isAbout.value = false
     actAuthorIdx.value = i
     actCateIdx.value = 0; actItemIdx.value = 0; actItemStyIdx.value = 0
     getPoem(actAuthor.value, actTitle.value)
@@ -100,6 +111,10 @@
         console.log(typeof poemInfo.value)
       } else alert(data.msg)
     }))
+  }
+  /* 跳转至关于 */
+  function headAbout () {
+    isAbout.value = true
   }
   /* ----------------------- */
   onBeforeMount(() => {
@@ -268,6 +283,22 @@
               height: 100px;
             }
           }
+        }
+      }
+      .main-about {
+        width: 100%;
+        height: 100%;
+        // background-color: orange;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        >li {
+          line-height: 3rem;
+          &:first-of-type {
+            font-weight: bold;
+          }
+          &.mail {opacity: 0.7;}
         }
       }
     }
