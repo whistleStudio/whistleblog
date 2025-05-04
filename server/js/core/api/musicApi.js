@@ -23,6 +23,7 @@ rt.get("/getMusicList", (req, res) => {
         try {
             let musicList = yield Music_1.default.find({ favor: { $gt: 0 } }, "title");
             if (musicList.length >= 25) {
+                musicList = musicList.sort(() => Math.random() - 0.5); // 打乱顺序
                 musicList = [].slice.call(musicList, 0, 25);
                 res.json({ err: 0, musicList: musicList.map(e => e.title) });
             }

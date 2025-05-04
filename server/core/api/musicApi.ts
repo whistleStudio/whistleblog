@@ -10,6 +10,7 @@ rt.get("/getMusicList", (req: Request, res: Response) => {
     try {
       let musicList = await Music.find({favor: {$gt: 0}}, "title")
       if (musicList.length >= 25) {
+        musicList = musicList.sort(() => Math.random() - 0.5) // 打乱顺序
         musicList = [].slice.call(musicList, 0,25)
         res.json({err:0, musicList: musicList.map(e => e.title)})
       } else res.json(err[2])

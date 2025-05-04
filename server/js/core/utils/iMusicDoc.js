@@ -19,43 +19,56 @@ const PORT = 27017;
 main().catch(err => console.log(err));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@localhost:${PORT}/${DBNAME}`);
+        yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@127.0.0.1:${PORT}/${DBNAME}`);
         console.log(`db:${DBNAME} connected on port:${PORT}`);
         const musicDoc = {
-            title: "泡沫",
-            singer: "花儿乐队",
-            imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E6%B3%A1%E6%B2%AB/%E6%B3%A1%E6%B2%AB.jpg",
-            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E6%B3%A1%E6%B2%AB/%E8%8A%B1%E5%84%BF%E4%B9%90%E9%98%9F%20-%20%E6%B3%A1%E6%B2%AB.mp3",
+            title: "离别的车站",
+            singer: "孙露",
+            imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99/%E5%A3%B0%E8%89%B2%E6%89%B0%E4%BA%BA.jpg",
+            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99/%E5%AD%99%E9%9C%B2%20-%20%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99.m4a",
             lyric: `
-    我点燃那盏灯火
-向远方凝望着
-空气都打开了
-记忆随风散落
-幻想美好的时刻
-没有完美结果
-红色夕阳下落
-黯淡的云朵
-憧憬像飘浮的泡沫
-光映出灿烂的颜色
-可却没有照到我
-全世界的雨打到我
-我的梦已经湿透了
-瞬间被淹没
-
-我点燃那盏灯火
-向远方凝望着
-空气都打开了
-记忆随风散落
-幻想美好的时刻
-没有完美结果
-红色夕阳下落
-黯淡的云朵
-憧憬像飘浮的泡沫
-光映出灿烂的颜色
-可却没有照到我
-全世界的雨打到我
-我的梦已经湿透了
-瞬间被淹没          
+当你紧紧握着我的手
+再三说着珍重珍重
+当你深深看着我的眼
+再三说着别送别送
+当你走上离别的车站
+我终于不停的呼唤呼唤
+眼看你的车子越走越远
+我的心一片凌乱凌乱
+千言万语还来不及说
+我的泪早已泛滥泛滥
+从此我迷上了那个车站
+多少次在那儿痴痴的看
+离别的一幕总会重演
+你几乎把手儿挥断挥断
+何时列车能够把你带回
+我在这儿痴痴的盼
+你身在何方我不管不管
+请为我保重千万千万
+当你走上离别的车站
+我终于不停的呼唤呼唤
+眼看你的车子越走越远
+我的心一片凌乱凌乱
+千言万语还来不及说
+我的泪早已泛滥泛滥
+从此我迷上了那个车站
+多少次在那儿痴痴的看
+离别的一幕总会重演
+你几乎把手儿挥断挥断
+何时列车能够把你带回
+我在这儿痴痴的盼
+你身在何方我不管不管
+请为我保重千万千万
+千言万语还来不及说
+我的泪早已泛滥泛滥
+从此我迷上了那个车站
+多少次在那儿痴痴的看
+离别的一幕总会重演
+你几乎把手儿挥断挥断
+何时列车能够把你带回
+我在这儿痴痴的盼
+你身在何方我不管不管
+请为我保重千万千万
     `,
         };
         yield Music_1.default.create(musicDoc);

@@ -13,7 +13,7 @@
     <div class="index-right flex-center">
       <ul class="main flex-col-ycenter">
         <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
-          <div class="main-cate">{{menuList[i].txt}}</div>
+          <div class="main-cate" @click="menuClick(i)">{{menuList[i].txt}}</div>
           <div class="main-title">{{mainList[k].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
@@ -94,6 +94,7 @@
     .index-left {
       width: 33vw;
       height: 100%;
+      cursor: pointer;
       // background-color: red;
       &:hover {
         .logo-pic {animation: fadeOut linear 0.7s forwards;}
@@ -172,6 +173,7 @@
           .main-cate {
             font: bold 1.8rem/5rem $fontF;
             opacity: 0.2;
+            cursor: pointer;
           }
           .main-title {
             font: 1.3rem/3rem $fontF;

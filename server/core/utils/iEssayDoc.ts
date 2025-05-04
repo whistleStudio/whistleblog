@@ -3,7 +3,7 @@ import Essay, {IEssaySchema} from "../db/models/Essay";
 const DBNAME = 'whistleblog'
 const PORT = 27017
 
-// /* -barch test-- */
+// /* -batch test-- */
 // const tagArr = ["Vue", "NodeJs", "JavaScript", "TypeScript"]
 // const titleArr = ["微信小程序学习", "flex & grid Layout"]
 // const srcArr = [

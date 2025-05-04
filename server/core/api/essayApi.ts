@@ -4,11 +4,12 @@ import {err} from "../../public/errMap.json"
 
 const rt = express.Router()
 const artCate = {
+  App: `rgb(123, 179, 211)`,
   JavaScript: `rgb(235, 177, 71)`,
   NodeJs: `rgb(124, 194, 145)`,
   Vue: `rgb(182, 218, 126)`,
-  TypeScript: `rgb(123, 179, 211)`,
   Flutter: `rgb(83, 95, 150)`,
+  叠梦: `rgb(255, 241, 153)`,
   Others: `rgb(240, 197, 212)`
 }
 
@@ -38,6 +39,7 @@ rt.get("/pageList", (req: pageListRequset, res: Response) => {
         var essayList = await Essay.find({}, "-_id").skip(pageSkip).limit(pageNum)
       } else var essayList = await Essay.find({tag: cate}, "-_id").skip(pageSkip).limit(pageNum)
       if (essayList.length >= 0) {
+        essayList = essayList.sort((a, b) => b.genDate.getTime() - a.genDate.getTime())
         res.json({err:0, essayList})
       } else res.json(err[1])
     } catch(e){console.log(e);res.json(err[5])}
