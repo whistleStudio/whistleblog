@@ -9,7 +9,7 @@
       <div class="main">
         <div class="cate flex-center">
           <div>
-            <span>{{showMode!==2 ? actCate : "Search"}}</span>
+            <span @click="backCateAll">{{showMode!==2 ? actCate : "Search"}}</span>
             <span class="cate-icon" :class="{'cate-icon-exp': isCateExp}" @click="cateIconClick(1)">&nbsp;{{isCateExp ?
             '|' : '➡'}}</span>
           </div>
@@ -104,6 +104,13 @@ function cateClick(pageSkip: number, pageNum: number, cate: string) {
           } else essayList.value.push(...data.essayList)
         } else alert(data.msg)
       }))
+}
+
+/* 回到所有文章状态 */
+function backCateAll () {
+  isCateExp.value = false
+  showMode.value = 1
+  cateClick(0, pageCount.value*2, "All")
 }
 
 /* 搜索框选中 */

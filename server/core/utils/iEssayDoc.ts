@@ -16,7 +16,7 @@ const PORT = 27017
 main().catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect(`mongodb://wsh:19930304wsh@localhost:${PORT}/${DBNAME}`);
+  await mongoose.connect(`mongodb://wsh:19930304wsh@127.0.0.1:${PORT}/${DBNAME}`);
   console.log(`db:${DBNAME} connected on port:${PORT}`)
 
   const oneDoc:IEssaySchema = {

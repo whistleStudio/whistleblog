@@ -21,8 +21,8 @@ const homeData = {
         src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/%E8%BF%98%E6%BD%AE%20-%20%E8%88%9F%E5%AE%BF%E6%B8%A1%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3.mp3"
     },
     essay: {
-        title: "flex & grid Layout",
-        content: `如果所有项目的flex-shrink属性都为1，当空间不足时，都将等比例缩小。如果一个项目的flex-shrink属性为0，其他项目都为1，则空间不足时，前者不缩小...`
+        title: "阿瓜坨zZZ",
+        content: `阿瓜快两岁的时候，说自己长大了，也要有只宠物。我没同意，笑她还是个小肉球，能养个啥。说不过我，咿咿呀呀地叫个不停...`
     }
 };
 rt.get("/getHomeData", (req, res) => {

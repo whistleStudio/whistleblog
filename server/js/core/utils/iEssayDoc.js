@@ -29,7 +29,7 @@ const PORT = 27017;
 main().catch(err => console.log(err));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@localhost:${PORT}/${DBNAME}`);
+        yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@127.0.0.1:${PORT}/${DBNAME}`);
         console.log(`db:${DBNAME} connected on port:${PORT}`);
         const oneDoc = {
             tag: "JavaScript",

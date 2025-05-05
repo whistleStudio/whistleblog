@@ -17,11 +17,12 @@ const Essay_1 = __importDefault(require("../db/models/Essay"));
 const errMap_json_1 = require("../../public/errMap.json");
 const rt = express_1.default.Router();
 const artCate = {
+    App: `rgb(123, 179, 211)`,
     JavaScript: `rgb(235, 177, 71)`,
     NodeJs: `rgb(124, 194, 145)`,
     Vue: `rgb(182, 218, 126)`,
-    TypeScript: `rgb(123, 179, 211)`,
     Flutter: `rgb(83, 95, 150)`,
+    叠梦: `rgb(255, 241, 153)`,
     Others: `rgb(240, 197, 212)`
 };
 /* 获取目录 */
@@ -41,6 +42,7 @@ rt.get("/pageList", (req, res) => {
             else
                 var essayList = yield Essay_1.default.find({ tag: cate }, "-_id").skip(pageSkip).limit(pageNum);
             if (essayList.length >= 0) {
+                essayList = essayList.sort((a, b) => b.genDate.getTime() - a.genDate.getTime());
                 res.json({ err: 0, essayList });
             }
             else

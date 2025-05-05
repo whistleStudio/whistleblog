@@ -22,53 +22,27 @@ function main() {
         yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@127.0.0.1:${PORT}/${DBNAME}`);
         console.log(`db:${DBNAME} connected on port:${PORT}`);
         const musicDoc = {
-            title: "离别的车站",
-            singer: "孙露",
-            imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99/%E5%A3%B0%E8%89%B2%E6%89%B0%E4%BA%BA.jpg",
-            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99/%E5%AD%99%E9%9C%B2%20-%20%E7%A6%BB%E5%88%AB%E7%9A%84%E8%BD%A6%E7%AB%99.m4a",
+            title: "晨钟暮鼓",
+            singer: "白百EndlessWhite",
+            imgUrl: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E6%99%A8%E9%92%9F%E6%9A%AE%E9%BC%93/%E6%99%A8%E9%92%9F%E6%9A%AE%E9%BC%93.jpg",
+            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/music/%E6%99%A8%E9%92%9F%E6%9A%AE%E9%BC%93/%E7%99%BD%E7%99%BEEndlessWhite%20-%20%E6%99%A8%E9%92%9F%E6%9A%AE%E9%BC%93.m4a",
             lyric: `
-当你紧紧握着我的手
-再三说着珍重珍重
-当你深深看着我的眼
-再三说着别送别送
-当你走上离别的车站
-我终于不停的呼唤呼唤
-眼看你的车子越走越远
-我的心一片凌乱凌乱
-千言万语还来不及说
-我的泪早已泛滥泛滥
-从此我迷上了那个车站
-多少次在那儿痴痴的看
-离别的一幕总会重演
-你几乎把手儿挥断挥断
-何时列车能够把你带回
-我在这儿痴痴的盼
-你身在何方我不管不管
-请为我保重千万千万
-当你走上离别的车站
-我终于不停的呼唤呼唤
-眼看你的车子越走越远
-我的心一片凌乱凌乱
-千言万语还来不及说
-我的泪早已泛滥泛滥
-从此我迷上了那个车站
-多少次在那儿痴痴的看
-离别的一幕总会重演
-你几乎把手儿挥断挥断
-何时列车能够把你带回
-我在这儿痴痴的盼
-你身在何方我不管不管
-请为我保重千万千万
-千言万语还来不及说
-我的泪早已泛滥泛滥
-从此我迷上了那个车站
-多少次在那儿痴痴的看
-离别的一幕总会重演
-你几乎把手儿挥断挥断
-何时列车能够把你带回
-我在这儿痴痴的盼
-你身在何方我不管不管
-请为我保重千万千万
+等时间埋没
+你透过他的眼睛
+当所有结束一切
+都将恢复拷贝的过程
+这世界定论无数
+你无法替我走过
+所谓是好是坏
+都需要我一个人来挥舞大旗
+等时间埋没
+你透过他的眼睛
+当所有结束一切
+都将恢复拷贝的过程
+这世界定论无数
+你无法替我走过
+所谓是好是坏
+都需要我一个人来挥舞大旗      
     `,
         };
         yield Music_1.default.create(musicDoc);
