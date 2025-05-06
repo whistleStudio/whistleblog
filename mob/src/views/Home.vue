@@ -12,7 +12,7 @@
           <div class="main-title">{{mainList[k].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
-            <audio :autoplay="canBgmPlay" ref="idxAudio" controls :src="mainList[k].src" volume="0.6" @play="disAutoPlay"></audio>
+            <audio :autoplay="canBgmPlay" ref="idxAudio" controls :src="bus.curSong.src" volume="0.6" @play="disAutoPlay"></audio>
           </div>
         </li>
       </ul>
@@ -44,17 +44,17 @@ function showMenu () {
   setTimeout(() => {
     showMode.value = 0
     // 总线curSong存在时，使用总线curSong
-    setTimeout(()=>{
-      if (bus.curSong.src !== "") {
-        bus.emit("updateBusSong")
-        const audioElement = idxAudio.value[0] as HTMLAudioElement;
-        audioElement.src = bus.curSong.src
-        audioElement.volume = bus.curSong.volume;
-        audioElement.currentTime = bus.curSong.currentTime;
-        audioElement.play();
-      }
-      bus.emit("playMusic", showMode.value)
-    }, 50)
+    // setTimeout(()=>{
+    //   if (bus.curSong.src !== "") {
+    //     bus.emit("updateBusSong")
+    //     const audioElement = idxAudio.value[0] as HTMLAudioElement;
+    //     audioElement.src = bus.curSong.src
+    //     audioElement.volume = bus.curSong.volume;
+    //     audioElement.currentTime = bus.curSong.currentTime;
+    //     audioElement.play();
+    //   }
+    //   bus.emit("playMusic", showMode.value)
+    // }, 50)
   }, 650)
 }
 /* 页面跳转 */
