@@ -72,9 +72,9 @@ onBeforeMount(() => {
   .then(data => {
     mainList.value = data.homeData
   }))
+
 })
 onMounted(()=>{
-  console.log(window.location.pathname)
   //只在首次打开时，生效
   if (sessionStorage.getItem("canBgmPlay") === "yes") {
     canBgmPlay.value = true
@@ -86,7 +86,6 @@ onBeforeUnmount(() => {
   console.log(idxAudio.value[0])
   if (idxAudio.value[0]) {
     const audioElement = idxAudio.value[0] as HTMLAudioElement;
-    bus.curSong.duration = audioElement.currentTime;
     bus.curSong.currentTime = audioElement.currentTime;
     bus.curSong.src = audioElement.src;
     bus.curSong.volume = audioElement.volume;

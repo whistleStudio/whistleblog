@@ -4,13 +4,17 @@ interface EventList {
   [key: string]: EventCallback[];
 }
 
-interface Song {
-  title: string;
-  singer: string;
-  picUrl: string;
-  src: string;
+interface IMusic {
+  title: string,
+  singer: string,
+  src: string,
+  lyric: string,
+  imgUrl: string,
+  favor: number
+}
+
+interface Song extends IMusic {
   currentTime: number;
-  duration: number;
   volume: number; 
 }
 
@@ -20,6 +24,7 @@ interface Bus {
   emit: (name: string, ...args: any[]) => void;
   curSong: Song;
   updateCurSong: (song: Song) => void;
+  playlist: IMusic[];
 }
 
 const bus: Bus = {
@@ -43,16 +48,19 @@ const bus: Bus = {
   curSong: {
     title: "",
     singer: "",
-    picUrl: "",
     src: "",
+    lyric: "",
+    imgUrl: "",
+    favor: 1,
     currentTime: 0,
-    duration: 0,
     volume: 0, 
   },
 
   updateCurSong: function (song: Song) {
     this.curSong = song
-  }
+  },
+
+  playlist: []
   
 };
 

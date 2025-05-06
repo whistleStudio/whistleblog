@@ -8,9 +8,9 @@ const rt = express.Router()
 rt.get("/getMusicList", (req: Request, res: Response) => {
   ;(async () => {
     try {
-      let musicList = await Music.find({favor: {$gt: 0}}, "title")
+      let musicList = await Music.find({favor: {$gt: 0}}, "title favor")
       if (musicList.length >= 25) {
-        musicList = musicList.sort(() => Math.random() - 0.5) // 打乱顺序
+        musicList = musicList.sort(() => Math.random() - 0.5).sort((a, b) => b.favor-a.favor)// 打乱顺序
         musicList = [].slice.call(musicList, 0,25)
         res.json({err:0, musicList: musicList.map(e => e.title)})
       } else res.json(err[2])
