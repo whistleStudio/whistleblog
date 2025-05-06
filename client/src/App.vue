@@ -11,7 +11,7 @@
     if (isMobilePhone.value) window.location.href="https://mblog.whistlestudio.cn/"
     sessionStorage.setItem("canBgmPlay", "yes")
   })
-  onMounted(() => {setTimeout(() => {document.title = "波文"}, 500)})
+  onMounted(() => {setTimeout(() => {document.title = "波文"}, 200)})
 </script>
 
 <template>

@@ -22,14 +22,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue';
+import bus from '@/utils/bus';
+
 import router from "@/router"
 interface IMenuList  {
   txt: string,
   link: string
 }
 
-let showMode = ref<number>(1), isLogoAni = ref<boolean>(false), canBgmPlay = ref<boolean>(false)
+let showMode = ref<number>(1), isLogoAni = ref<boolean>(false), canBgmPlay = ref<boolean>(false), idxAudio = ref<any>(null);
 let menuList: Array<IMenuList> = [
   {txt: "诗", link: "/poem"},
   {txt: "乐", link: "/music"},
@@ -41,6 +43,18 @@ function showMenu () {
   isLogoAni.value = true
   setTimeout(() => {
     showMode.value = 0
+    // 总线curSong存在时，使用总线curSong
+    setTimeout(()=>{
+      if (bus.curSong.src !== "") {
+        bus.emit("updateBusSong")
+        const audioElement = idxAudio.value[0] as HTMLAudioElement;
+        audioElement.src = bus.curSong.src
+        audioElement.volume = bus.curSong.volume;
+        audioElement.currentTime = bus.curSong.currentTime;
+        audioElement.play();
+      }
+      bus.emit("playMusic", showMode.value)
+    }, 50)
   }, 650)
 }
 /* 页面跳转 */
@@ -60,11 +74,29 @@ onBeforeMount(() => {
   }))
 })
 onMounted(()=>{
-    //只在首次打开时，生效
-    if (sessionStorage.getItem("canBgmPlay") === "yes") {
-      canBgmPlay.value = true
-    }
-  })
+  console.log(window.location.pathname)
+  //只在首次打开时，生效
+  if (sessionStorage.getItem("canBgmPlay") === "yes") {
+    canBgmPlay.value = true
+  }
+
+})
+
+onBeforeUnmount(() => {
+  console.log(idxAudio.value[0])
+  if (idxAudio.value[0]) {
+    const audioElement = idxAudio.value[0] as HTMLAudioElement;
+    bus.curSong.duration = audioElement.currentTime;
+    bus.curSong.currentTime = audioElement.currentTime;
+    bus.curSong.src = audioElement.src;
+    bus.curSong.volume = audioElement.volume;
+  }
+});
+
+onUnmounted(() => {
+  bus.emit("playMusic", 0)
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -106,23 +138,25 @@ onMounted(()=>{
     }
   }
   .content {
-
-    height: 85%;
     // background-color: green;
     flex-direction: column;
     padding: 0 1.5rem;
     .main {
       li {
         max-width: 600px;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
         overflow: hidden;
         &:last-of-type {
           .main-content{text-align: left;}
           margin-bottom: 0;
         }
         .main-cate {
-          font: bold 1.8rem/5rem $fontF;
+          font: bold 1.8rem/4rem $fontF;
           opacity: 0.2;
+          &:first-of-type {
+            line-height: 1.8rem;
+            margin-bottom: 1.1rem;
+          }
         }
         .main-title {
           font: 1.3rem/2.5rem $fontF;

@@ -42,7 +42,7 @@
           <li>关于子秋：是站长的爷爷，这是他的笔名，内容源自他的诗集《红枫》；现在，他正在旅行中</li>
           <li>关于他界：里面是每个和我们一样，飘荡在这世间的吟游诗人</li>
           <li class="mail">--------------------------------------------</li>
-          <li class="mail">有啥想说的，可以留言到这里💬435424527@qq.com</li>
+          <li class="mail">有啥想说的，可以留言给这里💬微信ID: WhistleStudio</li>
         </ul>
       </div>
     </div>
@@ -53,6 +53,7 @@
   import router from "@/router"
   import { computed } from "@vue/reactivity";
   import {reactive, ref, onBeforeMount, Ref, onMounted} from "vue"
+  import bus from "@/utils/bus";
 
   interface IpoemInfo {
     title?: string,
@@ -132,14 +133,23 @@
   })
   onMounted(() => {
     /* 单击页面浮出目录 */
-    window.onclick = () => {
+    window.onclick = (ev) => {
+      let inv = 5000
+      // 判断点击的元素是不是上部目录里的条目
+      const isHeaderMenuItem = (ev.target as HTMLElement).closest('.head-bar ul li');
+      if (isHeaderMenuItem) {
+        inv = 100
+      }
+
       if (cateShowMode.value<1&&isAbout.value===false) {
         cateShowMode.value = 1
         setTimeout(() => {
           cateShowMode.value = 0
-        }, 5000)
+        }, inv)
       } else if (isAbout.value===true) cateShowMode.value = 0
     }
+    /* 音乐播放器 */
+    console.log("song:", bus.curSong.currentTime, bus.curSong.duration)
   })
 </script>
 
@@ -173,7 +183,6 @@
         >ul {
           display: flex;
           margin-left: auto;
-          // background-color: yellow;
           li {
             margin-left: 30px;
             font: 17px $fontF;
@@ -229,7 +238,11 @@
                 opacity: 0.9;  
               }
             }
+            ::-webkit-scrollbar { width: 0px; }
             >ul {
+              overflow: auto;
+              max-height: 250px;
+              box-sizing: border-box;
               .cate-item {
                 text-align: left;
                 text-indent: 14px;
@@ -240,6 +253,7 @@
                   opacity: 0.9;
                   text-decoration: underline;
                   text-underline-offset: 5px;
+                  
                 }
               }
             }
