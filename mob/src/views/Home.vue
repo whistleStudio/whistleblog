@@ -9,7 +9,7 @@
       <ul class="main flex-col-ycenter">
         <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
           <div class="main-cate" @click="toPage(menuList[i].link)">{{menuList[i].txt}}</div>
-          <div v-if="i!==1" class="main-title">{{mainList[k].title}}</div> <div v-else class="main-title">{{bus.playlist[curSong.idx].title}}</div>
+          <div v-if="i!==1" class="main-title">{{mainList[k].title}}</div> <div v-else class="main-title audio-title">{{bus.playlist[curSong.idx].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
             <!-- :autoplay="canBgmPlay" -->
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, computed, watch } from 'vue';
 import bus from '@/utils/bus';
 import router from "@/router"
 
@@ -72,7 +72,8 @@ onMounted(()=>{
   if (sessionStorage.getItem("canBgmPlay") === "yes") {
     canBgmPlay.value = true
   }
-
+  // Home audio自动播放下一首歌曲
+  
 })
 
 onBeforeUnmount(() => { 
@@ -86,6 +87,16 @@ onBeforeUnmount(() => {
 
 onUnmounted(() => {
   // bus.emit("playAppMusic")
+})
+
+watch(() => bus.curSong.idx, (newVal) => {
+  console.log("bus.curSong.idx:", newVal)
+  // const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+  // const audioTitleElement = document.querySelector(".audio-title") as HTMLAudioElement
+  // audioTitleElement.innerText = bus.playlist[newVal].title
+  // audioElement.src = bus.playlist[newVal].src
+  // audioElement.currentTime = bus.curSong.currentTime
+  // audioElement.volume = bus.curSong.volume
 })
 
 </script>
