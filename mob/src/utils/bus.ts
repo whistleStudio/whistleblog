@@ -13,6 +13,7 @@ interface IMusic {
   lyric: string,
   imgUrl: string,
   favor: number
+  [key: string]: any
 }
 
 interface Song  {
@@ -63,3 +64,4 @@ const bus: Bus = {
 };
 
 export default bus;
+export type {IMusic, Song};

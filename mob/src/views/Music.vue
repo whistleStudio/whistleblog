@@ -26,28 +26,22 @@
 
 <script setup lang="ts">
   import { onBeforeMount, onMounted, reactive, Ref, ref } from 'vue';
+  import bus from '@/utils/bus';
+  import { IMusic } from '@/utils/bus';
   import router from "@/router"
 
-  interface IMusicInfo {
-    title: string,
-    singer: string,
-    lyric: string,
-    src: string,
-    imgUrl: string,
-    [name:string]: string
-  }
   let main = ref<any>(null) 
   let rotateDegs: Ref<number[]> = ref([]), isPlay = ref(false), maskMode = ref(-1)
   let musicList: Ref<string[]> = ref([])
-  let actMusic: IMusicInfo = reactive({
-    title: "", singer: "", lyric: "", src: "", imgUrl: ""
+  let actMusic: IMusic = reactive({
+    title: "", singer: "", lyric: "", src: "", imgUrl: "", favor: 1
   })
 
   /* 左区点击歌名 */
   function titleClick (v: string) {
     if (maskMode.value===1) {
       actMusic.title = v
-      getActMusicInfo(v)
+      // getActMusicInfo(v)
       setTimeout(()=>{maskMode.value = 0},50) //延迟置0，避免main.onclick触发
     }
   }
@@ -55,42 +49,48 @@
   function logoClick () {
     router.push("/")
   }
-  /* 请求播放歌曲详细信息 */
-  function getActMusicInfo (actTitle: string) {
-    fetch (`/api/music/getActMusicInfo?actTitle=${actTitle}`)
-    .then(res => res.json()
-    .then(data => {
-      if (!data.err) {
-        console.log(data)
-        Object.keys(data.actMusicInfo).forEach(e => {
-          actMusic[e] = data.actMusicInfo[e]
-        })
-      } else alert(data.msg)
-    }))
-  }
+  // /* 请求播放歌曲详细信息 */
+  // function getActMusicInfo (actTitle: string) {
+  //   fetch (`/api/music/getActMusicInfo?actTitle=${actTitle}`)
+  //   .then(res => res.json()
+  //   .then(data => {
+  //     if (!data.err) {
+  //       console.log(data)
+  //       Object.keys(data.actMusicInfo).forEach(e => {
+  //         actMusic[e] = data.actMusicInfo[e]
+  //       })
+  //     } else alert(data.msg)
+  //   }))
+  // }
   /* ---------------------------------- */
   onBeforeMount(() => {
     for (let v of Array(24)) {
       rotateDegs.value.push(Math.random()*360)
     }
-    fetch ("/api/music/getMusicList")
-    .then(res => res.json()
-    .then(data => {
-      if (!data.err) {
-        // 随机排序
-        let rdList: string[] = []
-        let mcList: string[] = data.musicList
-        for (let v of Array(24)) {
-          let rdIdx: number = Math.floor(Math.random()*mcList.length)
-          rdList.push(...mcList.splice(rdIdx,1))
-        }
-        musicList.value = rdList
-        actMusic.title = rdList[Math.floor(Math.random()*25)]
-        getActMusicInfo(actMusic.title)
-      } else {
-        alert(data.msg)
-      }
-    }))
+    let rdList = [...bus.playlist].sort(() => Math.random() - 0.5) // 随机打乱
+    Object.keys(bus.playlist[bus.curSong.idx]).forEach(e => {
+      actMusic[e] = bus.playlist[bus.curSong.idx][e];
+    });
+
+    // fetch ("/api/music/getMusicList")
+    // .then(res => res.json()
+    // .then(data => {
+    //   if (!data.err) {
+    //     // 随机排序
+    //     let rdList: string[] = []
+    //     let mcList: string[] = data.musicList
+    //     for (let v of Array(24)) {
+    //       let rdIdx: number = Math.floor(Math.random()*mcList.length)
+    //       rdList.push(...mcList.splice(rdIdx,1))
+    //     }
+    //     musicList.value = rdList
+    //     actMusic.title = rdList[Math.floor(Math.random()*25)]
+    //     getActMusicInfo(actMusic.title)
+    //   } else {
+    //     alert(data.msg)
+    //   }
+    // }))
+
   })
   onMounted(() => {
     main.value.onclick = () => {

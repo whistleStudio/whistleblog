@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { onBeforeMount, onMounted, ref, computed, reactive } from 'vue';
+  import { onBeforeMount, onMounted, ref, computed } from 'vue';
   import bus from './utils/bus';
+  import commonHandles from './utils/commonHandles';
   import router from "@/router"
 
   const isGlobalAudioMuted = ref(true); // 全局音频静音状态 // 当前歌曲信息
@@ -36,50 +37,32 @@
     }))
   })
   onMounted(() => {
-    setTimeout(() => {document.title = "波文"}, 200)
-
+    setTimeout(() => {document.title = "波文"}, 200) // 过审用
     const audioElement = document.querySelector(".global-audio") as HTMLAudioElement;
+
+    // 单曲结束事件
+    const handleAudioEnded = () => { commonHandles.handleAudioEnded(audioElement) }
+    // 监听：移除App audio ended事件
+    bus.on("removeAppAudioEnded", () => {audioElement.removeEventListener("ended", handleAudioEnded)})
     // 总线监听：播放app音乐 
     bus.on("playAppMusic", () => {
+      commonHandles.updateViewSong(audioElement)
       audioElement.play();
-      console.log("playAppMusic:", curSong.value, bus.curSong.currentTime)
-      console.log(router.currentRoute.value.path)
       isGlobalAudioMuted.value = false
+      // App audio自动播放下一首歌曲
+      audioElement.removeEventListener("ended", handleAudioEnded)
+      audioElement.addEventListener("ended", handleAudioEnded)
       // if (router.currentRoute.value.path == "/home" && homeShowMode == 0) isGlobalAudioMuted.value = true;
       // else isGlobalAudioMuted.value = false;
     })
     // 总线监听：静音app音乐
     bus.on("muteAppMusic", () => {
-      updateBusSong()
+      commonHandles.updateBusSong(audioElement)
       audioElement.play();
       isGlobalAudioMuted.value = true
     })
 
-    /* 更新bus song */
-    function updateBusSong () {
-      bus.curSong.currentTime = audioElement.currentTime;
-      bus.curSong.volume = audioElement.volume;
-    }
-    // 监听：移除App audio ended事件
-    bus.on("removeAppAudioEnded", () => {
-      audioElement.removeEventListener("ended", handleAudioEnded);
-    })
 
-    // App audio自动播放下一首歌曲
-    audioElement.addEventListener("ended", handleAudioEnded);
-
-    // 单曲结束事件
-    function handleAudioEnded() {
-      console.log("ended")
-      const currentIndex = bus.curSong.idx;
-      const nextIndex = (currentIndex + 1) % bus.playlist.length; // 循环播放
-      bus.curSong.idx = nextIndex;
-      bus.curSong.currentTime = 0;
-      console.log("nextSong", bus.playlist[nextIndex].title)
-      console.log("curSong", bus.playlist[curSong.value.idx].src)
-      audioElement.src = bus.playlist[nextIndex].src;
-      audioElement.play()
-    }
   })
 
 </script>

@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, computed, watch } from 'vue';
 import bus from '@/utils/bus';
+import commonHandles from '../utils/commonHandles';
 import router from "@/router"
 
 interface IMenuList  {
@@ -46,8 +47,19 @@ const curSong = computed(() => bus.curSong)
 function showMenu () {
   isLogoAni.value = true
   setTimeout(() => { //等待logo动画完成
+    bus.emit("removeAppAudioEnded")
     bus.emit("muteAppMusic")
-    showMode.value = 0 
+    showMode.value = 0
+    setTimeout(() => {
+      const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+      const audioTitleElement = document.querySelector(".audio-title") as HTMLAudioElement
+      const handleAudioEnded = () => {
+        commonHandles.handleAudioEnded(audioElement)
+        audioTitleElement.innerText = bus.playlist[bus.curSong.idx].title
+      } 
+      // Home audio自动播放下一首歌曲
+      audioElement.addEventListener("ended", handleAudioEnded)
+    }, 50)
   }, 600)
 }
 /* 页面跳转 */
@@ -72,8 +84,6 @@ onMounted(()=>{
   if (sessionStorage.getItem("canBgmPlay") === "yes") {
     canBgmPlay.value = true
   }
-  // Home audio自动播放下一首歌曲
-  
 })
 
 onBeforeUnmount(() => { 
@@ -87,16 +97,6 @@ onBeforeUnmount(() => {
 
 onUnmounted(() => {
   // bus.emit("playAppMusic")
-})
-
-watch(() => bus.curSong.idx, (newVal) => {
-  console.log("bus.curSong.idx:", newVal)
-  // const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
-  // const audioTitleElement = document.querySelector(".audio-title") as HTMLAudioElement
-  // audioTitleElement.innerText = bus.playlist[newVal].title
-  // audioElement.src = bus.playlist[newVal].src
-  // audioElement.currentTime = bus.curSong.currentTime
-  // audioElement.volume = bus.curSong.volume
 })
 
 </script>
