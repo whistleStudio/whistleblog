@@ -35,4 +35,19 @@ rt.get("/getActMusicInfo", (req: GetAMIRequest, res: Response) => {
   }) ()
 })
 
+
+/* 请求歌曲信息完整列表 */
+rt.get("/getMusicInfoList", (req: Request, res: Response) => {
+  ;(async () => {
+    try {
+      let musicList = await Music.find({favor: {$gt: 0}})
+      if (musicList.length >= 25) {
+        musicList = musicList.sort(() => Math.random() - 0.5).sort((a, b) => b.favor-a.favor)// 打乱顺序
+        musicList = [].slice.call(musicList, 0,25)
+        res.json({err:0, musicInfoList: musicList})
+      } else res.json(err[2])
+    } catch(e){console.log(e);res.json(err[5])}
+  })()
+})
+
 export default rt

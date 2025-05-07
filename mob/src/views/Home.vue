@@ -9,10 +9,13 @@
       <ul class="main flex-col-ycenter">
         <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
           <div class="main-cate" @click="toPage(menuList[i].link)">{{menuList[i].txt}}</div>
-          <div class="main-title">{{mainList[k].title}}</div>
+          <div v-if="i!==1" class="main-title">{{mainList[k].title}}</div> <div v-else class="main-title">{{bus.playlist[curSong.idx].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
-            <audio :autoplay="canBgmPlay" ref="idxAudio" controls :src="bus.curSong.src" volume="0.6" @play="disAutoPlay"></audio>
+            <!-- :autoplay="canBgmPlay" -->
+            <audio  class="home-audio" ref="idxAudio" controls @play="disAutoPlay" autoplay
+            :src="bus.playlist[curSong.idx].src" :currentTime="curSong.currentTime" :volume="curSong.volume" >
+            </audio>
           </div>
         </li>
       </ul>
@@ -22,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, computed } from 'vue';
 import bus from '@/utils/bus';
-
 import router from "@/router"
+
 interface IMenuList  {
   txt: string,
   link: string
@@ -38,24 +41,14 @@ let menuList: Array<IMenuList> = [
   {txt: "记", link: "/essay"}
 ]
 let mainList = ref<any>({})
+const curSong = computed(() => bus.curSong)
 /* 展示菜单 */
 function showMenu () {
   isLogoAni.value = true
-  setTimeout(() => {
-    showMode.value = 0
-    // 总线curSong存在时，使用总线curSong
-    // setTimeout(()=>{
-    //   if (bus.curSong.src !== "") {
-    //     bus.emit("updateBusSong")
-    //     const audioElement = idxAudio.value[0] as HTMLAudioElement;
-    //     audioElement.src = bus.curSong.src
-    //     audioElement.volume = bus.curSong.volume;
-    //     audioElement.currentTime = bus.curSong.currentTime;
-    //     audioElement.play();
-    //   }
-    //   bus.emit("playMusic", showMode.value)
-    // }, 50)
-  }, 650)
+  setTimeout(() => { //等待logo动画完成
+    bus.emit("muteAppMusic")
+    showMode.value = 0 
+  }, 600)
 }
 /* 页面跳转 */
 function toPage (link: string) {
@@ -82,18 +75,17 @@ onMounted(()=>{
 
 })
 
-onBeforeUnmount(() => {
-  console.log(idxAudio.value[0])
-  if (idxAudio.value[0]) {
-    const audioElement = idxAudio.value[0] as HTMLAudioElement;
-    bus.curSong.currentTime = audioElement.currentTime;
-    bus.curSong.src = audioElement.src;
-    bus.curSong.volume = audioElement.volume;
-  }
+onBeforeUnmount(() => { 
+  const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+  console.log(audioElement)
+  bus.curSong.currentTime = audioElement.currentTime;
+  bus.curSong.volume = audioElement.volume;
+  console.log("beforeHomeUnmount:", bus.curSong)
+  bus.emit("playAppMusic")
 });
 
 onUnmounted(() => {
-  bus.emit("playMusic", 0)
+  // bus.emit("playAppMusic")
 })
 
 </script>

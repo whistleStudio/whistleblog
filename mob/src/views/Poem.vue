@@ -110,7 +110,7 @@
     .then(data => {
       if (!data.err) {
         poemInfo.value = data.poemInfo
-        console.log(typeof poemInfo.value)
+        // console.log(typeof poemInfo.value)
       } else alert(data.msg)
     }))
   }
@@ -128,7 +128,7 @@
         menuList.push(...data.menuList)
         getPoem (actAuthor.value, actTitle.value)
       } else alert(data.msg)
-      console.log("menulist ---", menuList)
+      // console.log("menulist ---", menuList)
     }))
   })
   onMounted(() => {
@@ -148,8 +148,6 @@
         }, inv)
       } else if (isAbout.value===true) cateShowMode.value = 0
     }
-    /* 音乐播放器 */
-    console.log("song:", bus.curSong.currentTime, bus.curSong.duration)
   })
 </script>
 

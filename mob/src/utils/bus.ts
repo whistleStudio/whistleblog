@@ -1,3 +1,5 @@
+import defaultInfo from "./defaultInfo";
+
 type EventCallback = (...args: any[]) => void;
 
 interface EventList {
@@ -13,7 +15,8 @@ interface IMusic {
   favor: number
 }
 
-interface Song extends IMusic {
+interface Song  {
+  idx: number;
   currentTime: number;
   volume: number; 
 }
@@ -46,21 +49,16 @@ const bus: Bus = {
   },
 
   curSong: {
-    title: "",
-    singer: "",
-    src: "",
-    lyric: "",
-    imgUrl: "",
-    favor: 1,
+    idx: 0,
     currentTime: 0,
-    volume: 0, 
+    volume: 0.6, 
   },
 
   updateCurSong: function (song: Song) {
     this.curSong = song
   },
 
-  playlist: []
+  playlist: [defaultInfo.defaultSong],
   
 };
 
