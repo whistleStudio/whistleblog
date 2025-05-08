@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
+  import { reactive, ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue';
   import router from "@/router"
   import bus from '@/utils/bus';
   import commonHandles from '../utils/commonHandles';
@@ -92,13 +92,26 @@
       // 监听：播放暂停事件
       audioElement.addEventListener("play", commonHandles.handleAudioPlay)
       audioElement.addEventListener("pause", commonHandles.handleAudioPause)
-    }, 100)
+    }, 200)
   })
 
+  let t = 0
   onBeforeUnmount(() => { 
     const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+    console.log("bus.appAudio:", bus.appAudio)
     commonHandles.updateBusSongBeforeUnmount(audioElement)
+    t = new Date().getTime()
+    if (bus.appAudio) {
+      commonHandles.updateViewSong(bus.appAudio)
+      if (bus.curSong.isPlaying) bus.appAudio.play()
+      else bus.appAudio.pause()
+      bus.appAudio.muted = false
+    }
   });
+
+  onUnmounted(() => {
+    console.log(new Date().getTime() - t)
+  })
 </script>
 
 <style scoped lang="scss">

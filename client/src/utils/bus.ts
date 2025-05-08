@@ -29,6 +29,7 @@ interface Bus {
   emit: (name: string, ...args: any[]) => void;
   curSong: Song;
   playlist: IMusic[];
+  appAudio?: HTMLAudioElement
 }
 
 const bus: Bus = {

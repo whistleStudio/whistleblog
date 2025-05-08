@@ -8,8 +8,6 @@ export default {
     const nextIndex = (currentIndex + 1) % bus.playlist.length; // 循环播放
     bus.curSong.idx = nextIndex;
     bus.curSong.currentTime = 0;
-    // console.log("nextSong", bus.playlist[nextIndex].title)
-    // console.log("curSong", bus.playlist[bus.curSong.idx].src)
     audio.src = bus.playlist[nextIndex].src;
     audio.play()
   },
@@ -19,6 +17,7 @@ export default {
   },
   handleAudioPlay: function () {
     bus.curSong.isPlaying = true;
+    console.log("play")
   },
 
   /* ------------------- */
@@ -30,13 +29,13 @@ export default {
   // 更新页面播放器音量和当前时间
   updateViewSong: function (audio: HTMLAudioElement) {
     audio.src = bus.playlist[bus.curSong.idx].src;
-    audio.currentTime = bus.curSong.currentTime;
+    audio.currentTime = bus.curSong.currentTime-2.5/10;
     audio.volume = bus.curSong.volume;
   },
   // view卸载前更新bus
   updateBusSongBeforeUnmount: function (audio: HTMLAudioElement) {
     audio.removeEventListener("pause", this.handleAudioPause)
-    bus.curSong.currentTime = audio.currentTime;
+    bus.curSong.currentTime = audio.currentTime+3/10;
     bus.curSong.volume = audio.volume;
     bus.emit("playAppMusic")
   },
