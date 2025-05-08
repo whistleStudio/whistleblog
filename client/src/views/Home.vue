@@ -14,10 +14,12 @@
       <ul class="main flex-col-ycenter">
         <li  v-for="(k,i) in Object.keys(mainList)" :key="i">
           <div class="main-cate" @click="menuClick(i)">{{menuList[i].txt}}</div>
-          <div class="main-title">{{mainList[k].title}}</div>
+          <div v-if="i!==1" class="main-title">{{mainList[k].title}}</div> <div v-else class="main-title audio-title">{{bus.playlist[bus.curSong.idx].title}}</div>
           <div v-if="i!==1" class="main-content">{{mainList[k].content}}</div>
           <div v-else>
-            <audio ref="idxAudio" controls :src="mainList[k].src" volume="0.6"></audio>
+            <audio  class="home-audio" ref="idxAudio" controls :autoplay="bus.curSong.isPlaying"
+            :src="bus.playlist[bus.curSong.idx].src" :currentTime="bus.curSong.currentTime" :volume="bus.curSong.volume" >
+            </audio>
           </div>
         </li>
       </ul>
@@ -27,8 +29,11 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, Ref, ref, onMounted, onBeforeMount } from 'vue';
+  import { reactive, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
   import router from "@/router"
+  import bus from '@/utils/bus';
+  import commonHandles from '../utils/commonHandles';
+
   interface IMenuList  {
     txt: string,
     link: string
@@ -73,16 +78,27 @@
   })
 
   onMounted(()=>{
-    // 只在首次打开时，生效
-    if (sessionStorage.getItem("canBgmPlay") === "yes") {
-      document.addEventListener("click", musicAutoPlay)
-      sessionStorage.setItem("canBgmPlay", "no")
-    }
-    function musicAutoPlay () {
-      idxAudio?.value[0]?.play()
-      document.removeEventListener("click", musicAutoPlay)
-    }
+    bus.emit("removeAppAudioEnded")
+    bus.emit("muteAppMusic")
+    setTimeout(() => {
+      const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+      const audioTitleElement = document.querySelector(".audio-title") as HTMLAudioElement
+      const handleAudioEnded = () => {
+        commonHandles.handleAudioEnded(audioElement)
+        audioTitleElement.innerText = bus.playlist[bus.curSong.idx].title
+      } 
+      // 监听：Home audio自动播放下一首歌曲
+      audioElement.addEventListener("ended", handleAudioEnded)
+      // 监听：播放暂停事件
+      audioElement.addEventListener("play", commonHandles.handleAudioPlay)
+      audioElement.addEventListener("pause", commonHandles.handleAudioPause)
+    }, 100)
   })
+
+  onBeforeUnmount(() => { 
+    const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
+    commonHandles.updateBusSongBeforeUnmount(audioElement)
+  });
 </script>
 
 <style scoped lang="scss">

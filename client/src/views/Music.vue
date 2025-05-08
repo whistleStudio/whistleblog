@@ -3,18 +3,24 @@
   <div class="music">
     <div class="left flex-center">
       <div class="left-box">
-        <ul v-if="rotateDegs.length===25">
-          <li class="flex-center" :class="{logo: i===12, playing: i===12&&isPlay}" v-for="(v, i) in musicList" :key="i" @click="logoClick(i)" :style="{backgroundImage: i===12&&isPlay?`url(${actMusic.imgUrl})`:''}">
-            <span v-if="i!==12" 
-            @click="leftTitleClick(v)" :class="{active: v===actMusic.title}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v}}</span>
+        <ul>
+          <!-- 0-11 -->
+          <li class="flex-center" v-for="(v, i) in musicList.slice(0, musicList.length/2)">
+            <span  @click="leftTitleClick(v)" :class="{active: v.title===actMusic.title}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v.title}}</span>
           </li>
+          <li class="flex-center logo" :class="{playing: isPlay}" :style="{backgroundImage:isPlay? `url(${actMusic.imgUrl})` :''}" @click="logoClick"></li> 
+          <!-- 12-23 -->
+          <li class="flex-center" v-for="(v, i) in musicList.slice(12)">
+            <span  @click="leftTitleClick(v)" :class="{active: v.title===actMusic.title}" :style="{transform: `rotate(${rotateDegs[i]}deg)`}">{{v.title}}</span>
+          </li> 
         </ul>
       </div>
     </div>
     <div class="right flex-center">
       <div class="song flex-col-ycenter">
         <div class="song-info"><span>{{actMusic.title}}</span><span>&nbsp;&nbsp;-&nbsp;&nbsp;{{actMusic.singer}}</span></div>
-        <audio ref="musicAudio" :src="actMusic.src" controls autoplay @play="isPlay=true" @pause="isPlay=false"></audio>
+        <audio class="music-audio" :src="actMusic.src" controls @play="isPlay=true" @pause="isPlay=false"
+        :autoplay="bus.curSong.isPlaying" :currentTime="bus.curSong.currentTime" :volume="bus.curSong.volume"></audio>
         <div class="song-lyric">{{actMusic.lyric}}</div>
       </div>
     </div>
@@ -22,74 +28,75 @@
 </template>
 
 <script setup lang="ts">
-  import { onBeforeMount, reactive, Ref, ref } from 'vue';
+  import { onBeforeMount, onMounted, onBeforeUnmount, reactive, Ref, ref } from 'vue';
+  import bus from '@/utils/bus';
+  import { IMusic } from '@/utils/bus';
+  import commonHandles from '@/utils/commonHandles';
   import router from "@/router"
 
-  interface IMusicInfo {
-    title: string,
-    singer: string,
-    lyric: string,
-    src: string,
-    imgUrl: string,
-    [name:string]: string
-  }
   // let musicAudio: Ref<HTMLAudioElement> | Ref<null> = ref(null) 
-  let musicAudio = ref<any>(null)
   let rotateDegs: Ref<number[]> = ref([]), isPlay = ref(false)
-  let musicList: Ref<string[]> = ref([])
-  let actMusic: IMusicInfo = reactive({
-    title: "", singer: "", lyric: "", src: "", imgUrl: ""
-  })
+  let musicList: Ref<IMusic[]> = ref([])
+  let actMusic: IMusic = reactive({ title: "", singer: "", lyric: "", src: "", imgUrl: "", favor: 1 })
 
   /* 左区点击歌名 */
-  function leftTitleClick (v: string) {
-    actMusic.title = v
-    getActMusicInfo(v)
-    // setTimeout(()=>{musicAudio?.value?.play()}, 500)
+  function leftTitleClick (v: IMusic) {
+    let findIdx = bus.playlist.findIndex((item: IMusic) => item.title === v.title && item.singer === v.singer)
+    console.log(findIdx)
+    if (findIdx < 0) return
+    bus.curSong.idx = findIdx
+    bus.curSong.isPlaying = true
+    isPlay.value = true
+    updateMusicView()
   }
   /* 回到主页 */  
-  function logoClick (i: number) {
-    if (i === 12) router.push("/")
+  function logoClick () {
+    router.push("/")
   }
-  function musicPlay (){
-    console.log("plua")
+  // 更新页面内容
+  function updateMusicView () {
+    Object.keys(bus.playlist[bus.curSong.idx]).forEach(e => {
+      actMusic[e] = bus.playlist[bus.curSong.idx][e];
+    });
   }
-  /* 请求播放歌曲详细信息 */
-  function getActMusicInfo (actTitle: string) {
-    fetch (`/api/music/getActMusicInfo?actTitle=${actTitle}`)
-    .then(res => res.json()
-    .then(data => {
-      if (!data.err) {
-        console.log(data)
-        Object.keys(data.actMusicInfo).forEach(e => {
-          actMusic[e] = data.actMusicInfo[e]
-        })
-      } else alert(data.msg)
-    }))
-  }
+
   /* ---------------------------------- */
   onBeforeMount(() => {
-    for (let v of Array(25)) {
+    bus.emit("removeAppAudioEnded")
+    bus.emit("muteAppMusic")
+    for (let v of Array(24)) {
       rotateDegs.value.push(Math.random()*360)
     }
-    fetch ("/api/music/getMusicList")
-    .then(res => res.json()
-    .then(data => {
-      if (!data.err) {
-        // 随机排序
-        let rdList: string[] = []
-        let mcList: string[] = data.musicList
-        for (let v of Array(25)) {
-          let rdIdx: number = Math.floor(Math.random()*mcList.length)
-          rdList.push(...mcList.splice(rdIdx,1))
-        }
-        musicList.value = rdList
-        actMusic.title = rdList[Math.floor(Math.random()*25)]
-        getActMusicInfo(actMusic.title)
-      } else {
-        alert(data.msg)
+    // 防止当前页面刷新时, 更新view不及时用
+    const tim_playlist_ok = setInterval(() => {
+      if (bus.playlist.length == 24) {
+        console.log("load ok")
+        musicList.value = [...bus.playlist].sort(() => Math.random() - 0.5) // 随机打乱
+        updateMusicView()
+        clearInterval(tim_playlist_ok)
       }
-    }))
+    }, 10)
+  })
+
+  onMounted(() => {
+    // 监听：Home audio自动播放下一首歌曲
+    const audioElement = document.querySelector(".music-audio") as HTMLAudioElement
+    const handleAudioEnded = () => {
+      commonHandles.handleAudioEnded(audioElement)
+      setTimeout(() => {
+        updateMusicView()
+      }, 50) 
+    } 
+    // 监听：Home audio自动播放下一首歌曲
+    audioElement.addEventListener("ended", handleAudioEnded)
+    // 监听：播放暂停事件
+    audioElement.addEventListener("play", commonHandles.handleAudioPlay)
+    audioElement.addEventListener("pause", commonHandles.handleAudioPause)
+  })
+
+  onBeforeUnmount(() => {
+    const audioElement = document.querySelector(".music-audio") as HTMLAudioElement
+    commonHandles.updateBusSongBeforeUnmount(audioElement)
   })
 </script>
 

@@ -9,12 +9,13 @@
           <div class="singer">{{actMusic.singer}}</div>
         </div>
       </div>
-      <audio :src="actMusic.src" controls autoplay @play="isPlay=true" @pause="isPlay=false"></audio>
+      <audio class="music-audio" :src="actMusic.src" controls :autoplay="bus.curSong.isPlaying" :currentTime="bus.curSong.currentTime" :volume="bus.curSong.volume" 
+      @play="isPlay=true" @pause="isPlay=false"></audio>
     </div>
     <div class="main" ref="main">
       <ul class="main-wrapper" :class="{active: maskMode===1, wrapFadeOut: maskMode===0}">
         <li v-for="(v, i) in musicList" :key="i" class="item flex-center" >
-          <span @click="titleClick(v)" :style="{transform: `rotate(${rotateDegs[i]}deg)`}" :class="{active: actMusic.title===v}">{{v}}</span>
+          <span @click="titleClick(v)" :style="{transform: `rotate(${rotateDegs[i]}deg)`}" :class="{active: actMusic.title===v.title}">{{v.title}}</span>
         </li>
       </ul>
       <div class="main-lyric" :class="{active: maskMode===1}">
@@ -25,74 +26,63 @@
 </template>
 
 <script setup lang="ts">
-  import { onBeforeMount, onMounted, reactive, Ref, ref } from 'vue';
+  import { onBeforeMount, onBeforeUnmount, onMounted, reactive, Ref, ref } from 'vue';
   import bus from '@/utils/bus';
   import { IMusic } from '@/utils/bus';
+  import commonHandles from '@/utils/commonHandles';
   import router from "@/router"
+
 
   let main = ref<any>(null) 
   let rotateDegs: Ref<number[]> = ref([]), isPlay = ref(false), maskMode = ref(-1)
-  let musicList: Ref<string[]> = ref([])
-  let actMusic: IMusic = reactive({
-    title: "", singer: "", lyric: "", src: "", imgUrl: "", favor: 1
-  })
+  let musicList: Ref<IMusic[]> = ref([])
+  let actMusic: IMusic = reactive({ title: "", singer: "", lyric: "", src: "", imgUrl: "", favor: 1 })
 
   /* 左区点击歌名 */
-  function titleClick (v: string) {
+  function titleClick (v: IMusic) {
     if (maskMode.value===1) {
-      actMusic.title = v
       // getActMusicInfo(v)
       setTimeout(()=>{maskMode.value = 0},50) //延迟置0，避免main.onclick触发
+      let findIdx = bus.playlist.findIndex((item: IMusic) => item.title === v.title && item.singer === v.singer)
+      console.log(findIdx)
+      if (findIdx < 0) return
+      bus.curSong.idx = findIdx
+      bus.curSong.isPlaying = true
+      isPlay.value = true
+      updateMusicView()
     }
   }
   /* 回到主页 */  
   function logoClick () {
     router.push("/")
   }
-  // /* 请求播放歌曲详细信息 */
-  // function getActMusicInfo (actTitle: string) {
-  //   fetch (`/api/music/getActMusicInfo?actTitle=${actTitle}`)
-  //   .then(res => res.json()
-  //   .then(data => {
-  //     if (!data.err) {
-  //       console.log(data)
-  //       Object.keys(data.actMusicInfo).forEach(e => {
-  //         actMusic[e] = data.actMusicInfo[e]
-  //       })
-  //     } else alert(data.msg)
-  //   }))
-  // }
-  /* ---------------------------------- */
-  onBeforeMount(() => {
-    for (let v of Array(24)) {
-      rotateDegs.value.push(Math.random()*360)
-    }
-    let rdList = [...bus.playlist].sort(() => Math.random() - 0.5) // 随机打乱
+  // 更新页面内容
+  function updateMusicView () {
     Object.keys(bus.playlist[bus.curSong.idx]).forEach(e => {
       actMusic[e] = bus.playlist[bus.curSong.idx][e];
     });
+  }
 
-    // fetch ("/api/music/getMusicList")
-    // .then(res => res.json()
-    // .then(data => {
-    //   if (!data.err) {
-    //     // 随机排序
-    //     let rdList: string[] = []
-    //     let mcList: string[] = data.musicList
-    //     for (let v of Array(24)) {
-    //       let rdIdx: number = Math.floor(Math.random()*mcList.length)
-    //       rdList.push(...mcList.splice(rdIdx,1))
-    //     }
-    //     musicList.value = rdList
-    //     actMusic.title = rdList[Math.floor(Math.random()*25)]
-    //     getActMusicInfo(actMusic.title)
-    //   } else {
-    //     alert(data.msg)
-    //   }
-    // }))
-
+  /* ---------------------------------- */
+  onBeforeMount(() => {
+    bus.emit("removeAppAudioEnded")
+    bus.emit("muteAppMusic")
+    for (let v of Array(24)) {
+      rotateDegs.value.push(Math.random()*360)
+    }
+    // 防止当前页面刷新时, 更新view不及时用
+    const tim_playlist_ok = setInterval(() => {
+      if (bus.playlist.length == 24) {
+        console.log("load ok")
+        musicList.value = [...bus.playlist].sort(() => Math.random() - 0.5) // 随机打乱
+        updateMusicView()
+        clearInterval(tim_playlist_ok)
+      }
+    }, 10)  
   })
+
   onMounted(() => {
+    // 显示歌曲列表
     main.value.onclick = () => {
       if (maskMode.value < 1) {
         maskMode.value = 1
@@ -101,6 +91,24 @@
         }, 5000)
       }
     }
+    // 监听：Home audio自动播放下一首歌曲
+    const audioElement = document.querySelector(".music-audio") as HTMLAudioElement
+    const handleAudioEnded = () => {
+      commonHandles.handleAudioEnded(audioElement)
+      setTimeout(() => {
+        updateMusicView()
+      }, 50) 
+    } 
+    // 监听：Home audio自动播放下一首歌曲
+    audioElement.addEventListener("ended", handleAudioEnded)
+    // 监听：播放暂停事件
+    audioElement.addEventListener("play", commonHandles.handleAudioPlay)
+    audioElement.addEventListener("pause", commonHandles.handleAudioPause)
+  })
+
+  onBeforeUnmount(() => {
+    const audioElement = document.querySelector(".music-audio") as HTMLAudioElement
+    commonHandles.updateBusSongBeforeUnmount(audioElement)
   })
 </script>
 

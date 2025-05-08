@@ -53,7 +53,7 @@ const bus: Bus = {
     idx: 0,
     currentTime: 0,
     volume: 0.6, 
-    isPlaying: true, // 播放状态
+    isPlaying: false, // 播放状态
   },
 
   playlist: [defaultInfo.defaultSong],

@@ -36,10 +36,9 @@ rt.get("/pageList", (req: pageListRequset, res: Response) => {
   ;(async () => {
     try {
       if (cate==="All") {
-        var essayList = await Essay.find({}, "-_id").skip(pageSkip).limit(pageNum)
-      } else var essayList = await Essay.find({tag: cate}, "-_id").skip(pageSkip).limit(pageNum)
+        var essayList = await Essay.find({}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
+      } else var essayList = await Essay.find({tag: cate}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
       if (essayList.length >= 0) {
-        essayList = essayList.sort((a, b) => b.genDate.getTime() - a.genDate.getTime())
         res.json({err:0, essayList})
       } else res.json(err[1])
     } catch(e){console.log(e);res.json(err[5])}

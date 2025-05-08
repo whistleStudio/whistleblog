@@ -100,6 +100,7 @@ function cateClick(pageSkip: number, pageNum: number, cate: string) {
         if (!data.err) {
           if (pageNum === pageCount.value * 2) {
             essayList.value = data.essayList
+            console.log(essayList.value)
             showMode.value = 1; actCate.value = cate; maxTopScroll = 0; pageIdx = 0
           } else essayList.value.push(...data.essayList)
         } else alert(data.msg)
