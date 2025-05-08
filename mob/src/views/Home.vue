@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUnmount, defineEmits } from 'vue';
 import bus from '@/utils/bus';
 import commonHandles from '../utils/commonHandles';
 import router from "@/router"
@@ -42,6 +42,7 @@ let menuList: Array<IMenuList> = [
   {txt: "记", link: "/essay"}
 ]
 let mainList = ref<any>({})
+const emit = defineEmits(['appPlayMusic'])
 /* 展示菜单 */
 function showMenu () {
   isLogoAni.value = true
@@ -91,6 +92,7 @@ onMounted(()=>{
 onBeforeUnmount(() => { 
   const audioElement = document.querySelector(".home-audio") as HTMLAudioElement
   commonHandles.updateBusSongBeforeUnmount(audioElement)
+  emit('appPlayMusic')
 });
 
 
