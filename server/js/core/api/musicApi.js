@@ -21,9 +21,9 @@ rt.get("/getMusicList", (req, res) => {
     ;
     (() => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            let musicList = yield Music_1.default.find({ favor: { $gt: 0 } }, "title");
+            let musicList = yield Music_1.default.find({ favor: { $gt: 0 } }, "title favor");
             if (musicList.length >= 25) {
-                musicList = musicList.sort(() => Math.random() - 0.5); // 打乱顺序
+                musicList = musicList.sort(() => Math.random() - 0.5).sort((a, b) => b.favor - a.favor); // 打乱顺序
                 musicList = [].slice.call(musicList, 0, 25);
                 res.json({ err: 0, musicList: musicList.map(e => e.title) });
             }
@@ -45,6 +45,26 @@ rt.get("/getActMusicInfo", (req, res) => {
                 res.json({ err: 0, actMusicInfo });
             else
                 res.json(errMap_json_1.err[1]);
+        }
+        catch (e) {
+            console.log(e);
+            res.json(errMap_json_1.err[5]);
+        }
+    }))();
+});
+/* 请求歌曲信息完整列表 */
+rt.get("/getMusicInfoList", (req, res) => {
+    ;
+    (() => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            let musicList = yield Music_1.default.find({ favor: { $gt: 0 } });
+            if (musicList.length >= 25) {
+                musicList = musicList.sort(() => Math.random() - 0.5).sort((a, b) => b.favor - a.favor); // 打乱顺序
+                musicList = [].slice.call(musicList, 0, 24);
+                res.json({ err: 0, musicInfoList: musicList });
+            }
+            else
+                res.json(errMap_json_1.err[2]);
         }
         catch (e) {
             console.log(e);

@@ -37,12 +37,11 @@ rt.get("/pageList", (req, res) => {
     (() => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (cate === "All") {
-                var essayList = yield Essay_1.default.find({}, "-_id").skip(pageSkip).limit(pageNum);
+                var essayList = yield Essay_1.default.find({}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
             }
             else
-                var essayList = yield Essay_1.default.find({ tag: cate }, "-_id").skip(pageSkip).limit(pageNum);
+                var essayList = yield Essay_1.default.find({ tag: cate }, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
             if (essayList.length >= 0) {
-                essayList = essayList.sort((a, b) => b.genDate.getTime() - a.genDate.getTime());
                 res.json({ err: 0, essayList });
             }
             else
