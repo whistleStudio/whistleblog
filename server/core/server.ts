@@ -5,6 +5,7 @@ import homeApi from "./api/homeApi"
 import poemApi from "./api/poemApi"
 import musicApi from "./api/musicApi"
 import essayApi from "./api/essayApi"
+import infoApi from "./api/infoApi"
 
 const app = express() 
 const PORT = 8181
@@ -19,6 +20,7 @@ app.use("/api/home", homeApi)
 app.use("/api/poem", poemApi)
 app.use("/api/music", musicApi)
 app.use("/api/essay", essayApi)
+app.use("/api/info", infoApi)
 
 
 app.get("/", (req, res) => {
