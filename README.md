@@ -176,12 +176,3 @@ node v18
 - server
 
 【增加】musicapi 请求完整歌曲信息列表
-
-### [202507021449]
-
-- mob, client
-【增加】essay页:id详细路由，poem页about独立路由
-
-- server
-【增加】essay请求增加_id字段，增加单文章请求
-
