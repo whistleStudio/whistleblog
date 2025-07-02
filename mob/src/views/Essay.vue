@@ -94,12 +94,19 @@ function cateIconClick(exp: number) {
 }
 
 function articleLiClick(e: IEssay) {
-  actEssay.value = e
-  showMode.value = 0
-  iframeLoading.value = true
-  iframeError.value = false
-  // 路由跳转携带文章id
-  router.push({ name: 'EssayView', params: { id: e._id } })
+  switch (e._id) {
+    case "68610e0f6c54312ee493c9c2":
+      // 打开新窗口
+      window.open("https://blog.whistlestudio.cn/essay/App/aguato-docs/index.html", "_blank")
+      break
+    default:
+      actEssay.value = e
+      showMode.value = 0
+      iframeLoading.value = true
+      iframeError.value = false
+      // 路由跳转携带文章id
+      router.push({ name: 'EssayView', params: { id: e._id } })
+  }
 }
 
 function getCate () {
@@ -225,20 +232,27 @@ onMounted(() => {
       iframeLoading.value = true
       iframeError.value = false
     } else {
-      fetch(`/api/essay/one?id=${id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.err) {
-            actEssay.value = data.essay
-            showMode.value = 0
-            iframeLoading.value = true
-            iframeError.value = false
-          } else {
-            actEssay.value = undefined
-            showMode.value = 1
-            iframeError.value = true
-          }
-        })
+      switch(id) {
+        case "68610e0f6c54312ee493c9c2":
+          // 跳转至新地址
+          window.location.href = "https://blog.whistlestudio.cn/essay/App/aguato-docs/index.html"
+          break
+        default:
+          fetch(`/api/essay/one?id=${id}`)
+            .then(res => res.json())
+            .then(data => {
+              if (!data.err) {
+                actEssay.value = data.essay
+                showMode.value = 0
+                iframeLoading.value = true
+                iframeError.value = false
+              } else {
+                actEssay.value = undefined
+                showMode.value = 1
+                iframeError.value = true
+              }
+            })
+      }
     }
   }
 })
