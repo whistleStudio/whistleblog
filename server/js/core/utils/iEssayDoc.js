@@ -32,10 +32,10 @@ function main() {
         yield mongoose_1.default.connect(`mongodb://wsh:19930304wsh@127.0.0.1:${PORT}/${DBNAME}`);
         console.log(`db:${DBNAME} connected on port:${PORT}`);
         const oneDoc = {
-            tag: "JavaScript",
-            title: "javascript关于原型对象重写后的问题",
-            sum: "实际上, js中的每一个对象都有`__proto__`属性, 该属性会指向其构造函数的原型对象",
-            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/essay/javascript/javascript%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%E9%87%8D%E5%86%99%E5%90%8E%E7%9A%84%E9%97%AE%E9%A2%98/javascript%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%E9%87%8D%E5%86%99%E5%90%8E%E7%9A%84%E9%97%AE%E9%A2%98.html",
+            tag: "App",
+            title: "阿瓜物联使用文档",
+            sum: "支持本地和远程服务端的可视化物联网调试展演工具",
+            src: "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com/essay/App/aguato-docs/index.html",
             genDate: new Date()
         };
         yield Essay_1.default.create(oneDoc);

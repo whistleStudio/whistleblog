@@ -28,7 +28,9 @@
           </li>
         </ul>
         <div ref="artContent" class="content" v-else-if="showMode===0">
-          <iframe ref="ifr" scrolling="no" :src="(actEssay as IEssay).src" frameborder="0" @load="getIfrHeight"></iframe>
+          <div v-if="iframeLoading" class="iframe-loading">正在加载...</div>
+          <div v-if="iframeError" class="iframe-error">加载失败，请重试</div>
+          <iframe ref="ifr" scrolling="no" :src="(actEssay as IEssay).src" frameborder="0" @load="onIframeLoad" @error="onIframeError"></iframe>
         </div>
         <div class="result" v-else>
           <ul v-if="searchList.length">
@@ -47,41 +49,39 @@
 
 <script setup lang="ts">
 import router from '@/router';
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch, onBeforeUnmount } from "vue"
+import { useRoute } from 'vue-router'
+const route = useRoute()
 
 interface IEssay {
+  _id: string,
   tag: string,
   title: string,
   sum: string,
   src: string,
   genDate: Date
 }
-// input, iframe, content - DOM对象
 let kwIp = ref<any>(null), ifr = ref<any>(null), artContent = ref<any>(null), articleCate = ref<string[]>(["All"]), artCate = ref<{[propName: string]:string}>({})
-// showMode 1-列表 0-文章 2-搜索；artHeight 除去搜索，目录单页列表占满时高度
 const artLiHeight = 150
 let artHeight: number, maxTopScroll = 0, pageIdx = 0
 let isCateExp = ref<boolean>(false), showMode = ref<number>(1), essayList = ref<IEssay[]>([]), actEssay = ref<IEssay>(), actCate = ref<string>(articleCate.value[0]),
   pageCount = ref<number>(0), kw = ref<string>(""), searchList = ref<IEssay[]>([])
 
-/* 回到主页 */
 function logoClick() {
   router.push("/")
 }
 
-/* 目录展开/折叠 */
 function cateIconClick(exp: number) {
-  if (exp) isCateExp.value = true
-  else isCateExp.value = false
+  isCateExp.value = !!exp
 }
 
-/* 切换至文章具体内容 */
 function articleLiClick(e: IEssay) {
   actEssay.value = e
   showMode.value = 0
+  // 路由跳转携带文章id
+  router.push({ name: 'EssayView', params: { id: e._id } })
 }
 
-/* 请求目录 */
 function getCate () {
   fetch(`/api/essay/getCate`)
   .then(res => res.json()
@@ -92,7 +92,6 @@ function getCate () {
     } else alert(data.msg)
   }))
 }
-/* 请求类别文章 */
 function cateClick(pageSkip: number, pageNum: number, cate: string) {
   fetch(`/api/essay/pageList?pageSkip=${pageSkip}&pageNum=${pageNum}&cate=${cate}`)
     .then(res => res.json()
@@ -100,21 +99,26 @@ function cateClick(pageSkip: number, pageNum: number, cate: string) {
         if (!data.err) {
           if (pageNum === pageCount.value * 2) {
             essayList.value = data.essayList
-            console.log(essayList.value)
             showMode.value = 1; actCate.value = cate; maxTopScroll = 0; pageIdx = 0
           } else essayList.value.push(...data.essayList)
+          // 如果有id参数，自动定位到对应文章
+          // if (route.params.id) {
+          //   const match = essayList.value.find(e => e._id === route.params.id)
+          //   if (match) {
+          //     actEssay.value = match
+          //     showMode.value = 0
+          //   }
+          // }
+          router.push({ name: "essay" })
+          showMode.value = 1
         } else alert(data.msg)
       }))
 }
-
-/* 回到所有文章状态 */
 function backCateAll () {
   isCateExp.value = false
   showMode.value = 1
   cateClick(0, pageCount.value*2, "All")
 }
-
-/* 搜索框选中 */
 function ipFocus() {
   document.onkeydown = ev => {
     if (ev.key === "Enter") {
@@ -124,52 +128,115 @@ function ipFocus() {
     }
   }
 }
-
-/* 关键词搜索 */
 function kwSearch (keyword: string) {
   fetch(`/api/essay/kwSearch?kw=${keyword}`)
   .then(res => res.json()
   .then(data => {
     if (!data.err) {
-      // console.log(data.searchList)
       searchList.value = data.searchList
       showMode.value = 2 
     } else alert(data.msg)
   }))
 }
 
-/* 请求iframe内容高度 */
+const iframeLoading = ref(true), iframeError = ref(false)
+function onIframeLoad() { // iframe加载完成
+  iframeLoading.value = false
+  iframeError.value = false
+  getIfrHeight()
+}
+function onIframeError() { // iframe加载失败
+  iframeLoading.value = false
+  iframeError.value = true
+}
+
 function getIfrHeight () {
-  console.log("ifr onload")
   ifr?.value?.contentWindow.postMessage("getHeight", "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com")
 }
 
-/* ------------------------------------ */
+// 监听路由id参数变化，自动切换文章
+watch(() => route.params.id, (id) => {
+  if (id) {
+    const match = essayList.value.find(e => e._id === id)
+    if (match) {
+      actEssay.value = match
+      showMode.value = 0
+      iframeLoading.value = true
+      iframeError.value = false
+    } else {
+      fetch(`/api/essay/one?id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.err) {
+            actEssay.value = data.essay
+            showMode.value = 0
+            iframeLoading.value = true
+            iframeError.value = false
+          } else {
+            actEssay.value = undefined
+            showMode.value = 1
+            iframeError.value = true
+          }
+        })
+    }
+  } else {
+    showMode.value = 1
+  }
+})
+
+
+const messageHandler = (e: MessageEvent) => {
+  if (e.origin === "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com") {
+    artContent.value.style.height = e.data + "px"
+  }
+}
 onMounted(() => {
   getCate()
-  // 默认输入框聚焦
   kwIp?.value?.focus()
-  artHeight = document.documentElement.clientHeight - 170 - 50 //search 170, cate 50
+  artHeight = document.documentElement.clientHeight - 170 - 50
   pageCount.value = Math.floor(artHeight / artLiHeight) * 3
-  // console.log(pageCount.value)
-  // 预先请求一页的内容
-  cateClick(0, pageCount.value*2, "All")
-  // 监听滚动条
+  if(!route.params.id) cateClick(0, pageCount.value*2, "All")
   window.onscroll = () => {
     let s = document.body.scrollTop || document.documentElement.scrollTop
     maxTopScroll = s > maxTopScroll ? s : maxTopScroll
-    // console.log(document.documentElement.clientHeight, "----", s)
     if (showMode.value && maxTopScroll >= (pageIdx + 0.5) * artHeight) {
       cateClick(essayList.value.length, pageCount.value, actCate.value)
       pageIdx++
     }
   }
-  // 监听跨域iframe发送的页面高度消息
-  window.addEventListener("message", e => {
-    if (e.origin === "https://whistleblog-1300400818.cos.ap-nanjing.myqcloud.com") {
-      artContent.value.style.height = e.data + "px"
+  window.addEventListener("message", messageHandler)
+  // 处理直接url跳转，如果路由有id参数，自动定位到对应文章
+  if (route.params.id) {
+    const id = route.params.id
+    const match = essayList.value.find(e => e._id === id)
+    if (match) {
+      actEssay.value = match
+      showMode.value = 0
+      iframeLoading.value = true
+      iframeError.value = false
+    } else {
+      fetch(`/api/essay/one?id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.err) {
+            console.log("essay:", data.essay)
+            actEssay.value = data.essay
+            showMode.value = 0
+            iframeLoading.value = true
+            iframeError.value = false
+          } else {
+            actEssay.value = undefined
+            showMode.value = 1
+            iframeError.value = true
+          }
+        })
     }
-  })
+  }
+})
+
+onBeforeUnmount(() => {
+  window.onscroll = null
+  window.removeEventListener("message", messageHandler)
 })
 </script>
 
@@ -353,4 +420,37 @@ onMounted(() => {
     }
   }
 }
+
+.iframe-loading {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 18px;
+  background: linear-gradient(90deg, #f7f7f7 25%, #f0f0f0 50%, #f7f7f7 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.iframe-error {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(232, 109, 109);
+  font-size: 18px;
+  background: #faf3f3;
+  border-radius: 4px;
+}
+
 </style>

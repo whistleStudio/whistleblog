@@ -53,7 +53,9 @@
   import router from "@/router"
   import { computed } from "@vue/reactivity";
   import {reactive, ref, onBeforeMount, Ref, onMounted} from "vue"
-  import bus from "@/utils/bus";
+  import { useRoute } from "vue-router";
+
+  const route = useRoute()
 
   interface IpoemInfo {
     title?: string,
@@ -81,7 +83,7 @@
 
   /* 回到主页 */  
   function logoClick () {
-    router.push("/")
+    router.push("/home")
   }
   /* 点击顶部作者 */
   function headAuthorClick (i: number) {
@@ -117,6 +119,7 @@
   /* 跳转至关于 */
   function headAbout () {
     isAbout.value = true
+    router.push({name: "poemAbout"})
   }
   /* ----------------------- */
   onBeforeMount(() => {
@@ -147,6 +150,13 @@
           cateShowMode.value = 0
         }, inv)
       } else if (isAbout.value===true) cateShowMode.value = 0
+    }
+    // about页独立路由
+    if (route.fullPath === "/poem/about") {
+      isAbout.value = true
+      actAuthorIdx.value = 0
+      actCateIdx.value = 0; actItemIdx.value = 0; actItemStyIdx.value = 0
+      router.push({name: "poemAbout"})
     }
   })
 </script>

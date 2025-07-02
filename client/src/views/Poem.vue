@@ -52,7 +52,10 @@
 <script setup lang="ts">
   import router from "@/router"
   import { computed } from "@vue/reactivity";
-  import {reactive, ref, onBeforeMount, Ref} from "vue"
+  import {reactive, ref, onBeforeMount, Ref, onMounted} from "vue"
+  import { useRoute } from "vue-router";
+
+  const route = useRoute()
 
   interface IpoemInfo {
     title?: string,
@@ -86,6 +89,7 @@
     isAbout.value = false
     actAuthorIdx.value = i
     actCateIdx.value = 0; actItemIdx.value = 0; actItemStyIdx.value = 0
+    router.push({name: "poem"})
     getPoem(actAuthor.value, actTitle.value)
   }
   /* 点击侧边分类 */
@@ -115,6 +119,7 @@
   /* 跳转至关于 */
   function headAbout () {
     isAbout.value = true
+    router.push({name: "poemAbout"})
   }
   /* ----------------------- */
   onBeforeMount(() => {
@@ -130,6 +135,15 @@
       } else alert(data.msg)
       console.log("menulist ---", menuList)
     }))
+  })
+  onMounted(() => {
+    // 如果有id参数，自动定位到对应文章
+    if (route.fullPath === "/poem/about") {
+      isAbout.value = true
+      actAuthorIdx.value = 0
+      actCateIdx.value = 0; actItemIdx.value = 0; actItemStyIdx.value = 0
+      router.push({name: "poemAbout"})
+    }
   })
 </script>
 

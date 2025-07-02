@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
 const Info_1 = __importDefault(require("../db/models/Info"));
-const homeApi_1 = __importDefault(require("./homeApi"));
+const rt = express_1.default.Router();
 /* 请求信息 */
-homeApi_1.default.get("/getInfo", (req, res) => {
+rt.get("/getInfo", (req, res) => {
     let { k1, k2 } = req.query;
     (() => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -33,3 +34,4 @@ homeApi_1.default.get("/getInfo", (req, res) => {
         }
     }))();
 });
+exports.default = rt;

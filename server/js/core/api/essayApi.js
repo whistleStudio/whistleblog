@@ -29,7 +29,7 @@ const artCate = {
 rt.get("/getCate", (req, res) => {
     res.json({ err: 0, cate: artCate });
 });
-/* 获取文章 */
+/* 获取文章列表 */
 rt.get("/pageList", (req, res) => {
     const cate = req.query.cate;
     const pageNum = parseInt(req.query.pageNum);
@@ -37,15 +37,35 @@ rt.get("/pageList", (req, res) => {
     (() => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (cate === "All") {
-                var essayList = yield Essay_1.default.find({}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
+                var essayList = yield Essay_1.default.find({}).sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
             }
             else
-                var essayList = yield Essay_1.default.find({ tag: cate }, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
+                var essayList = yield Essay_1.default.find({ tag: cate }).sort({ genDate: -1 }).skip(pageSkip).limit(pageNum);
             if (essayList.length >= 0) {
                 res.json({ err: 0, essayList });
             }
             else
                 res.json(errMap_json_1.err[1]);
+        }
+        catch (e) {
+            console.log(e);
+            res.json(errMap_json_1.err[5]);
+        }
+    }))();
+});
+/* 获取单个文章 */
+rt.get("/one", (req, res) => {
+    const id = req.query.id;
+    if (!id)
+        return res.json(errMap_json_1.err[2]);
+    (() => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            let essay = yield Essay_1.default.findOne({ _id: id });
+            if (essay) {
+                res.json({ err: 0, essay });
+            }
+            else
+                res.json(errMap_json_1.err[3]);
         }
         catch (e) {
             console.log(e);

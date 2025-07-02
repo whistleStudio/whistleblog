@@ -27,7 +27,7 @@ interface pageListRequset extends Request {
     pageNum: string
   }
 }
-/* 获取文章 */
+/* 获取文章列表 */
 rt.get("/pageList", (req: pageListRequset, res: Response) => {
   const cate = req.query.cate
   const pageNum: number = parseInt(req.query.pageNum)
@@ -36,13 +36,27 @@ rt.get("/pageList", (req: pageListRequset, res: Response) => {
   ;(async () => {
     try {
       if (cate==="All") {
-        var essayList = await Essay.find({}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
-      } else var essayList = await Essay.find({tag: cate}, "-_id").sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
+        var essayList = await Essay.find({}).sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
+      } else var essayList = await Essay.find({tag: cate}).sort({ genDate: -1 }).skip(pageSkip).limit(pageNum)
       if (essayList.length >= 0) {
         res.json({err:0, essayList})
       } else res.json(err[1])
     } catch(e){console.log(e);res.json(err[5])}
     
+  })()
+})
+
+/* 获取单个文章 */
+rt.get("/one", (req: Request, res: Response) => {
+  const id = req.query.id as string
+  if (!id) return res.json(err[2])
+  ;(async () => {
+    try {
+      let essay = await Essay.findOne({_id: id})
+      if (essay) {  
+        res.json({err:0, essay})
+      } else res.json(err[3])
+    } catch(e){console.log(e);res.json(err[5])}
   })()
 })
 
